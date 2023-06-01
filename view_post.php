@@ -51,6 +51,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION["user_id"])) {
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<?php include "navbar.php"; ?>
+
     <div class="container">
         <h1><?php echo $post["title"]; ?></h1>
         <p><?php echo $post["content"]; ?></p>

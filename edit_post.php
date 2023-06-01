@@ -48,6 +48,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<?php include "navbar.php"; ?>
+
     <div class="container">
         <h1>Edit Post</h1>
 

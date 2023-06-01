@@ -36,12 +36,15 @@ $stmt->close();
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<?php include "navbar.php"; ?>
+
     <div class="container">
         <h1>Profile</h1>
         <p>Welcome, <?php echo $user["username"]; ?>!</p>
         <p>Email: <?php echo $user["email"]; ?></p>
         <p>Full Name: <?php echo $user["full_name"]; ?></p>
         <p>Other information: <?php echo $user["other_info"]; ?></p>
+        <a href="edit_profile.php" class="btn btn-primary">Edit Profile</a>
         <a href="logout.php" class="btn btn-primary">Logout</a>
 
         <hr>
@@ -49,8 +52,9 @@ $stmt->close();
         <h2>Your Blogs</h2>
 
         <?php if (!empty($posts)): ?>
+            <div class="blogs d-flex">
             <?php foreach ($posts as $post): ?>
-                <div class="card mb-3">
+                <div class="card mb-3 col-md-6 col-lg-4 me-3">
                     <div class="card-body">
                         <h5 class="card-title"><?php echo $post["title"]; ?></h5>
                         <p class="card-text"><?php echo substr($post["content"], 0, 100) . "..."; ?></p>
@@ -60,6 +64,7 @@ $stmt->close();
                     </div>
                 </div>
             <?php endforeach; ?>
+            </div>
         <?php else: ?>
             <p>No blog posts found.</p>
         <?php endif; ?>

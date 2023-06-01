@@ -26,6 +26,9 @@ if (isset($_GET["query"])) {
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<?php include "navbar.php"; ?>
+
+
   <div class="container">
     <h1>Search Results</h1>
     <?php if (isset($_GET["query"])): ?>
