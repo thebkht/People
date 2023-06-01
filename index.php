@@ -58,7 +58,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <li class="nav-item">
                         <a class="nav-link" href="#">Contact</a>
                     </li>
+
                 </ul>
+                <form action="search.php" method="GET" class="search-form form-group">
+                    <input type="text" name="query" class="form-control" placeholder="Search articles...">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="profile.php">Profile</a>
@@ -75,13 +80,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div class="row mt-4">
             <div class="col-4">
                 <!-- Blog post form -->
-        <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
+        <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST" class="blog-post">
             <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="title" placeholder="Title">
+                <input type="text" class="form-control" id="title" name="title" placeholder="Title">
                 <label for="title">Title</label>
             </div>
             <div class="form-floating mb-3">
-                <textarea class="form-control" id="content" placeholder="Content"></textarea>
+                <textarea class="form-control" id="content" name="content" placeholder="Content"></textarea>
                 <label for="content">Content</label>
             </div>
             <div class="mb-3">
@@ -97,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <div class="card mb-4">
                             <div class="card-body">
                                 <h5 class="card-title"><?php echo $post["title"]; ?></h5>
-                                <p class="card-text card-content"><?php echo substr($post["content"], 0, 100) . "..."; ?></p>
+                                <p class="card-text card-content"><?php echo strlen($post["content"]) > 100 ? substr($post["content"], 0, 100) . "..." : $post["content"]; ?></p>
                                 <div class="d-flex justify-content-between">
                                 <a href="view_post.php?post_id=<?php echo $post['post_id']; ?>" class="btn btn-primary">Read More</a>
                                 <p class="card-text"><small class="text-muted"><?php echo date("F j, Y", strtotime($post["created_at"])); ?></small></p>
