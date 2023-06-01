@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->close();
 
     // Redirect the user to the index page or display a success message
-    header("Location: view_post.php?post_id=$post_id");
+    header("Location: articles.php");
     exit();
 }
 ?>

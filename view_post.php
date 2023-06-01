@@ -26,18 +26,47 @@ $stmt->close();
 
 session_start();
 
-// Process the comment form submission
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION["user_id"])) {
-    $comment = $_POST["comment"];
-    $user_id = $_SESSION["user_id"];
+// Check if the post_id is provided in the URL
+if (isset($_GET["post_id"])) {
     $post_id = $_GET["post_id"];
 
-    $stmt = $conn->prepare("INSERT INTO comments (comment, user_id, post_id) VALUES (?, ?, ?)");
-    $stmt->bind_param("sii", $comment, $user_id, $post_id);
+    // Retrieve the current post from the database
+    $stmt = $conn->prepare("SELECT * FROM posts WHERE post_id = ?");
+    $stmt->bind_param("i", $post_id);
     $stmt->execute();
+    $result = $stmt->get_result();
+    $post = $result->fetch_assoc();
     $stmt->close();
 
-    header("Location: view_post.php?post_id=" . $_GET["post_id"]);
+    // Check if the post exists
+    if ($post) {
+        // Retrieve the related articles based on topics
+        $topics = explode(",", $post["topics"]);
+        $relatedArticles = [];
+
+        foreach ($topics as $topic) {
+            $stmt = $conn->prepare("SELECT * FROM posts WHERE topics LIKE ? AND post_id != ? ORDER BY created_at DESC LIMIT 3");
+            $likeTopic = '%' . trim($topic) . '%';
+            $stmt->bind_param("si", $likeTopic, $post_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $relatedArticles = array_merge($relatedArticles, $result->fetch_all(MYSQLI_ASSOC));
+            $stmt->close();
+        }
+
+        // Display the current post
+        // ...
+
+        // Display related articles
+        
+    } else {
+        // Redirect the user if the post doesn't exist
+        header("Location: index.php");
+        exit();
+    }
+} else {
+    // Redirect the user if post_id is not provided
+    header("Location: index.php");
     exit();
 }
 ?>
@@ -56,8 +85,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION["user_id"])) {
     <div class="container mb-5">
         <h1><?php echo $post["title"]; ?></h1>
         <p class="mt-4"><?php echo $post["content"]; ?></p>
-        <p class="author fw-bold">Posted by <?php echo $post["username"]; ?> on <?php echo date("F j, Y", strtotime($post["created_at"])); ?></p>
+        <p class="card-text fw-bold">Posted by 
+            <?php
+            if (isset($post['user_id'])) {
+                $stmt = $conn->prepare("SELECT username FROM users WHERE user_id = ?");
+                $stmt->bind_param("i", $post['user_id']);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $user = $result->fetch_assoc();
+                $stmt->close();
 
+                if ($user && isset($user['username'])) {
+                    echo $user['username'];
+                }
+            }
+            ?>
+        </p>
+    <p class="card-text d-inline"><small class="text-muted"><?php echo date("F j, Y", strtotime($post["created_at"])); ?></small></p>
         <div class="mt-4 mb-4">
         <h5>Topics:</h5>
         <?php
@@ -73,7 +117,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION["user_id"])) {
 
         <hr>
 
-        <h2>Comments</h2>
+        <a class="btn btn-primary mb-4" data-bs-toggle="offcanvas" href="#comments" role="button" aria-controls="comments">
+  Show Comments
+        </a>
+
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="comments" aria-labelledby="commentsLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasLabel">Comments</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
         <!-- Display existing comments -->
         <?php if (!empty($comments)): ?>
             <?php foreach ($comments as $comment): ?>
@@ -102,6 +155,33 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION["user_id"])) {
         <?php else: ?>
             <p>Please <a href="login.php">log in</a> to add a comment.</p>
         <?php endif; ?>
+        </div>
+        </div>
+
+        <!-- <?php
+            if (!empty($relatedArticles)) {
+                echo "<h2>Related Articles</h2>";
+                echo "<ul class='list-group mb-4'>";
+                foreach ($relatedArticles as $relatedArticle) {
+                    
+                    echo "<li class='list-group-item'>";
+                    echo "<a href='view_post.php?post_id=". $relatedArticle['post_id'] . "'>" . $relatedArticle['title'] . "</a>";
+                    echo "</li>";
+                }
+                echo "</ul>";
+            }
+        ?> -->
     </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
+    <script>
+        const offcanvasElementList = document.querySelectorAll('.offcanvas')
+const offcanvasList = [...offcanvasElementList].map(offcanvasEl => new bootstrap.Offcanvas(offcanvasEl))
+    </script>
+
+
 </body>
 </html>
