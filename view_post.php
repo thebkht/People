@@ -53,10 +53,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION["user_id"])) {
 <body>
 <?php include "navbar.php"; ?>
 
-    <div class="container">
+    <div class="container mb-5">
         <h1><?php echo $post["title"]; ?></h1>
-        <p><?php echo $post["content"]; ?></p>
-        <p class="author">Posted by <?php echo $post["username"]; ?> on <?php echo date("F j, Y", strtotime($post["created_at"])); ?></p>
+        <p class="mt-4"><?php echo $post["content"]; ?></p>
+        <p class="author fw-bold">Posted by <?php echo $post["username"]; ?> on <?php echo date("F j, Y", strtotime($post["created_at"])); ?></p>
+
+        <div class="mt-4 mb-4">
+        <h5>Topics:</h5>
+        <?php
+        // Explode the topics string into an array
+        $topicsArray = explode(',', $post["topics"]);
+
+        // Loop through the topics and display each as a button
+        foreach ($topicsArray as $topic) {
+            echo '<button type="button" class="btn btn-outline-primary btn-sm me-2 text-uppercase">' . trim($topic) . '</button>';
+        }
+        ?>
+    </div>
 
         <hr>
 

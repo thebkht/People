@@ -42,8 +42,6 @@ $stmt->close();
         <h1>Profile</h1>
         <p>Welcome, <?php echo $user["username"]; ?>!</p>
         <p>Email: <?php echo $user["email"]; ?></p>
-        <p>Full Name: <?php echo $user["full_name"]; ?></p>
-        <p>Other information: <?php echo $user["other_info"]; ?></p>
         <a href="edit_profile.php" class="btn btn-primary">Edit Profile</a>
         <a href="logout.php" class="btn btn-primary">Logout</a>
 
@@ -51,23 +49,27 @@ $stmt->close();
 
         <h2>Your Blogs</h2>
 
-        <?php if (!empty($posts)): ?>
-            <div class="blogs d-flex">
-            <?php foreach ($posts as $post): ?>
-                <div class="card mb-3 col-md-6 col-lg-4 me-3">
-                    <div class="card-body">
-                        <h5 class="card-title"><?php echo $post["title"]; ?></h5>
-                        <p class="card-text"><?php echo substr($post["content"], 0, 100) . "..."; ?></p>
-                        <p class="card-text">Date: <?php echo $post["created_at"]; ?></p>
-                        <a href="edit_post.php?post_id=<?php echo $post['post_id']; ?>" class="btn btn-primary">Edit</a>
-                        <a href="delete_post.php?post_id=<?php echo $post['post_id']; ?>" class="btn btn-danger">Delete</a>
+        <div class="row align-self-stretch">
+            <?php foreach ($posts as $article): ?>
+                <div class="col-md-4 mb-3">
+                    <div class="card mb-3 h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo $article['title']; ?></h5>
+                            <p class="card-text"><?php echo substr($article['content'], 0, 100); ?>...</p>
+                            
+                        </div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <div>
+                            <a href="edit_post.php?post_id=<?php echo $article['post_id']; ?>" class="btn btn-primary">Edit</a>
+                            <a href="delete_post.php?post_id=<?php echo $article['post_id']; ?>" class="btn btn-danger">Delete</a>
+
+                            </div>
+                            <p class="card-text d-inline"><small class="text-muted"><?php echo date("F j, Y", strtotime($article["created_at"])); ?></small></p>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>
-            </div>
-        <?php else: ?>
-            <p>No blog posts found.</p>
-        <?php endif; ?>
+        </div>
     </div>
 </body>
 </html>

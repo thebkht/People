@@ -15,26 +15,40 @@ if (isset($_GET["post_id"])) {
     $result = $stmt->get_result();
     $post = $result->fetch_assoc();
     $stmt->close();
+
+    // Check if the user is the author of the post
+    if ($post && $_SESSION["user_id"] === $post["user_id"]) {
+        // Check if the form is submitted for updating the post
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            // Retrieve the form data
+            $title = $_POST["title"];
+            $content = $_POST["content"];
+            $topics = $_POST["topics"];
+
+            // Convert newlines to HTML line breaks
+            $content = nl2br($content);
+
+            // Update the post in the database
+            $stmt = $conn->prepare("UPDATE posts SET title = ?, content = ?, topics = ? WHERE post_id = ?");
+            $stmt->bind_param("sssi", $title, $content, $topics, $post_id);
+            $stmt->execute();
+            $stmt->close();
+
+            // Redirect the user to the view post page or display a success message
+            header("Location: view_post.php?post_id=" . $post_id);
+            exit();
+        }
+
+        // Display the form for editing the post
+        
+    } else {
+        // Redirect the user if they are not the author of the post
+        header("Location: index.php");
+        exit();
+    }
 } else {
     // Redirect the user if post_id is not provided
     header("Location: index.php");
-    exit();
-}
-
-// Process the form submission
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $title = $_POST["title"];
-    $content = $_POST["content"];
-    // Additional validation and sanitization if needed
-
-    // Update the blog post in the database
-    $stmt = $conn->prepare("UPDATE posts SET title = ?, content = ? WHERE post_id = ?");
-    $stmt->bind_param("ssi", $title, $content, $post_id);
-    $stmt->execute();
-    $stmt->close();
-
-    // Redirect the user to the updated post
-    header("Location: view_post.php?post_id=$post_id");
     exit();
 }
 ?>
@@ -62,6 +76,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <div class="mb-3">
                     <label for="content" class="form-label">Content</label>
                     <textarea name="content" id="content" class="form-control" required><?php echo $post["content"]; ?></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="topics" class="form-label">Topics</label>
+                    <textarea name="topics" id="topics" class="form-control" required><?php echo $post["topics"]; ?></textarea>
                 </div>
                 <div class="mb-3">
                     <button type="submit" class="btn btn-primary">Update Post</button>
