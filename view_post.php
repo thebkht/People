@@ -159,14 +159,19 @@ if (isset($_GET["post_id"])) {
         </div>
 
         <!-- <?php
+            
             if (!empty($relatedArticles)) {
+                $displayed_articles = [];
                 echo "<h2>Related Articles</h2>";
                 echo "<ul class='list-group mb-4'>";
                 foreach ($relatedArticles as $relatedArticle) {
                     
-                    echo "<li class='list-group-item'>";
+                    if (!in_array($relatedArticle['post_id'], $displayed_articles)){
+                        echo "<li class='list-group-item'>";
                     echo "<a href='view_post.php?post_id=". $relatedArticle['post_id'] . "'>" . $relatedArticle['title'] . "</a>";
                     echo "</li>";
+                    $displayed_articles[] = $related_article['post_id'];
+                    }    
                 }
                 echo "</ul>";
             }
