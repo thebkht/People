@@ -21,7 +21,7 @@ This is a simple blogging web application where users can create, view, and mana
 
 ## Getting Started
 
-1. Clone the repository: `git clone https://github.com/your-username/blogging-web-app.git'\`
+1. Clone the repository: `git clone https://github.com/your-username/blogging-web-app.git\`
 
 
 2. Import the database:
