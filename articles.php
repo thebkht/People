@@ -2,12 +2,25 @@
 // Include the necessary database connection code
 require_once "db_connection.php";
 
-// Retrieve the blog posts with author information from the database
-$stmt = $conn->prepare("SELECT posts.*, users.username, users.created_at AS user_created_at FROM posts INNER JOIN users ON posts.user_id = users.user_id ORDER BY posts.created_at DESC");
+// Fetch all books from the database
+$stmt = $conn->prepare("SELECT * FROM posts");
 $stmt->execute();
-$result = $stmt->get_result();
-$articles = $result->fetch_all(MYSQLI_ASSOC);
+$articles = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
+
+// Check if the search form is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search'])) {
+    // Retrieve the search keyword
+    $keyword = $_POST['search'];
+
+    // Prepare the SQL statement with a search query
+    $stmt = $conn->prepare("SELECT * FROM posts WHERE title LIKE ?");
+    $searchKeyword = '%' . $keyword . '%';
+    $stmt->bind_param("s", $searchKeyword);
+    $stmt->execute();
+    $articles = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+}
 
 // Pagination
 $articlesPerPage = 9;
@@ -30,6 +43,13 @@ $articles = array_slice($articles, $offset, $articlesPerPage);
 <?php include "navbar.php"; ?>
     <div class="container">
         <h1>All Articles</h1>
+
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search articles...">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
 
         <div class="row align-self-stretch">
             <?php foreach ($articles as $article): ?>

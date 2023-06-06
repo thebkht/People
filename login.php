@@ -45,25 +45,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <body>
     <div class="container">
-        <h1>Login</h1>
+        <div class="row">
+            <div class="col-4 m-auto mt-5">
+            <h1>Login</h1>
 
-        <?php if (isset($error_message)): ?>
-            <div class="alert alert-danger" role="alert">
-                <?php echo $error_message; ?>
-            </div>
-        <?php endif; ?>
+<?php if (isset($error_message)): ?>
+    <div class="alert alert-danger" role="alert">
+        <?php echo $error_message; ?>
+    </div>
+<?php endif; ?>
 
-        <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" name="username" required>
+<form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="username" name="username" required>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+    </div>
+    <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+</form>
+<p>Don't have an account? <a href="signup.php">Sign up</a></p>
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-gPcuybB0syW5DjCZVDCDj4FCOBubVUoTLV9iDCDXjzfOiR7SLw6eSKbWJ4EODCK6" crossorigin="anonymous"></script>

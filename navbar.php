@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+<nav class="navbar navbar-expand-lg mb-4">
         <div class="container">
             <a class="navbar-brand" href="index.php">Readit.</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,10 +18,10 @@
 
                 </ul>
                 <ul class="navbar-nav ml-auto">
-                <form action="search.php" method="GET" class="search-form form-group">
+                <!-- <form action="search.php" method="GET" class="search-form form-group">
                     <input type="text" name="query" class="form-control" placeholder="Search articles...">
                     <button type="submit" class="btn btn-primary">Search</button>
-                </form>
+                </form> -->
                     <li class="nav-item">
                         <a class="nav-link" href="profile.php">Profile</a>
                     </li>
