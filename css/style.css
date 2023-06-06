@@ -1,12 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100;200;300;400;500;600;700;800&display=swap');
+
 *{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+a{
+    text-decoration: none !important;
+}
+
+:root{
+    --bs-body-bg: #F7F5FE;
+}
+
 body{
-    font-family: 'Poppins', sans-serif;
-    background: #fafafa;
+    font-family: 'Sora', sans-serif;
+    background: #F7F5FE;
 }
 
 .wrapper{
@@ -98,6 +108,29 @@ body{
     margin-top: 0;
 }
 
+.navbar .navbar-brand{
+    font-weight: 800;
+}
+
 .container{
     margin-top: 100px;
+}
+
+.blog-post .form-control{
+    background-color: #F7F5FE;
+    border-color: #F7F5FE;
+}
+
+.search-dropdown {
+    position: relative;
+}
+
+.search-dropdown .dropdown-menu {
+    width: 98%;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.search-dropdown .dropdown-item {
+    cursor: pointer;
 }

@@ -86,6 +86,7 @@ if (isset($_GET["post_id"])) {
         <h1><?php echo $post["title"]; ?></h1>
         <p class="mt-4"><?php echo $post["content"]; ?></p>
         <p class="card-text fw-bold">Posted by 
+            <a href="user.php?user_id=<?php echo $post['user_id']; ?>">
             <?php
             if (isset($post['user_id'])) {
                 $stmt = $conn->prepare("SELECT username FROM users WHERE user_id = ?");
@@ -100,6 +101,7 @@ if (isset($_GET["post_id"])) {
                 }
             }
             ?>
+            </a>
         </p>
     <p class="card-text d-inline"><small class="text-muted"><?php echo date("F j, Y", strtotime($post["created_at"])); ?></small></p>
         <div class="mt-4 mb-4">
