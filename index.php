@@ -11,35 +11,41 @@ if (!isset($_SESSION["user_id"])) {
 
 $userId = $_SESSION["user_id"];
 
-// Retrieve the list of followed user IDs
-$stmt = $conn->prepare("SELECT followed_id FROM user_followers WHERE follower_id = ?");
+// Check if the user is following someone
+$stmt = $conn->prepare("SELECT COUNT(*) FROM user_followers WHERE follower_id = ?");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $result = $stmt->get_result();
-$followedUsers = $result->fetch_all(MYSQLI_ASSOC);
+$count = $result->fetch_row()[0];
 $stmt->close();
 
-// Create an array to store the followed user IDs
-$followedUserIds = [];
-foreach ($followedUsers as $followedUser) {
-    $followedUserIds[] = $followedUser['followed_id'];
-}
+$articles = [];
+if ($count > 0) {
+    // Retrieve the list of followed user IDs
+    $stmt = $conn->prepare("SELECT followed_id FROM user_followers WHERE follower_id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $followedUsers = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
 
-$followedUserIdsString = implode(",", $followedUserIds);
+    // Create an array to store the followed user IDs
+    $followedUserIds = [];
+    foreach ($followedUsers as $followedUser) {
+        $followedUserIds[] = $followedUser['followed_id'];
+    }
 
-    $stmt = $conn->prepare("
-        SELECT p.*, COUNT(DISTINCT v.view_id) AS views, COUNT(DISTINCT c.comment_id) AS comments
-        FROM posts AS p
-        LEFT JOIN views AS v ON p.post_id = v.post_id
-        LEFT JOIN comments AS c ON p.post_id = c.post_id
-        WHERE p.user_id IN ($followedUserIdsString)
-        GROUP BY p.post_id
-        ORDER BY p.created_at DESC
-    ");
+    // Prepare the placeholders for the IN clause
+    $placeholders = rtrim(str_repeat('?,', count($followedUserIds)), ',');
+
+    // Prepare the SQL statement to retrieve articles from the followed users
+    $stmt = $conn->prepare("SELECT * FROM posts WHERE user_id IN ($placeholders)");
+    $stmt->bind_param(str_repeat('i', count($followedUserIds)), ...$followedUserIds);
     $stmt->execute();
     $result = $stmt->get_result();
     $articles = $result->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
+}
 
 // Check if the search query is provided in the GET request
 if (isset($_GET["searchQuery"])) {
@@ -123,9 +129,9 @@ if (isset($_GET["searchQuery"])) {
                     <h5 class="card-title"><?php echo $article['title']; ?></h5>
                     <p class="card-text"><?php echo substr($article['content'], 0, 200); ?>...</p>
                 </div>
-                <div class="card-footer">
-                Views: <?php echo $article['views']; ?><br>
-                        Comments: <?php echo $article['comments']; ?>
+                <div class="card-footer d-flex justify-content-between">
+                <p class="card-text d-inline mb-0"><small class="text-muted">Views: <?php echo $article['views']; ?></small></p>
+                <p class="card-text d-inline mb-0"><small class="text-muted"><?php echo date("F j, Y", strtotime($article["created_at"])); ?></small></p>
                 </div>
             </div>
             </a>

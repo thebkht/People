@@ -30,6 +30,38 @@ session_start();
 if (isset($_GET["post_id"])) {
     $post_id = $_GET["post_id"];
 
+    // Check if the post_views cookie exists
+    if (isset($_COOKIE['post_views'])) {
+        $postViews = $_COOKIE['post_views'];
+
+        // Split the cookie value into an array of post IDs
+        $viewedPosts = explode(',', $postViews);
+
+        // Check if the current post ID is already in the viewed posts array
+        if (!in_array($post_id, $viewedPosts)) {
+            // Increment the view count in the database
+            $stmt = $conn->prepare("UPDATE posts SET views = views + 1 WHERE post_id = ?");
+            $stmt->bind_param("i", $post_id);
+            $stmt->execute();
+            $stmt->close();
+
+            // Add the current post ID to the viewed posts array
+            $viewedPosts[] = $post_id;
+
+            // Update the post_views cookie
+            $updatedPostViews = implode(',', $viewedPosts);
+            setcookie('post_views', $updatedPostViews, time() + (86400 * 30), '/'); // Set the cookie for 30 days
+        }
+    } else {
+        // If the post_views cookie doesn't exist, create it and set the view count in the database
+        setcookie('post_views', $post_id, time() + (86400 * 30), '/'); // Set the cookie for 30 days
+
+        $stmt = $conn->prepare("UPDATE posts SET views = views + 1 WHERE post_id = ?");
+        $stmt->bind_param("i", $post_id);
+        $stmt->execute();
+        $stmt->close();
+    }
+
     // Retrieve the current post from the database
     $stmt = $conn->prepare("SELECT * FROM posts WHERE post_id = ?");
     $stmt->bind_param("i", $post_id);
