@@ -24,7 +24,7 @@ if (isset($_GET["user_id"])) {
     $stmt->close();
 
     // Retrieve user's articles from the database
-    $stmt = $conn->prepare("SELECT * FROM posts WHERE user_id = ?");
+    $stmt = $conn->prepare("SELECT * FROM articles WHERE user_id = ?");
     $stmt->bind_param("i", $followedId);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -66,7 +66,7 @@ if (isset($_GET["user_id"])) {
     $followerCount = $result->fetch_row()[0];
     $stmt->close();
 
-    // Retrieve the number of posts for the user
+    // Retrieve the number of articles for the user
     $postCount = count($articles);
 }
 ?>
@@ -88,7 +88,7 @@ if (isset($_GET["user_id"])) {
             <h4>@<?php echo $user['username']; ?></h4>
             <p>Email: <?php echo $user['email']; ?></p>
             <p>Number of Followers: <?php echo $followerCount; ?></p>
-            <p>Number of Posts: <?php echo $postCount; ?></p>
+            <p>Number of articles: <?php echo $postCount; ?></p>
 
             <!-- Follow Button -->
             <?php if ($_SESSION['user_id'] != $followedId): ?>
@@ -122,7 +122,7 @@ if (isset($_GET["user_id"])) {
                             <p class="card-text"><?php echo substr($article['content'], 0, 100); ?>...</p>
                         </div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <a href="view_post.php?post_id=<?php echo $article['post_id']; ?>" class="btn btn-primary">Read More</a>
+                            <a href="view_post.php?post_id=<?php echo $article['id']; ?>" class="btn btn-primary">Read More</a>
                             <p class="card-text d-inline"><small class="text-muted"><?php echo date("F j, Y", strtotime($article["created_at"])); ?></small></p>
                         </div>
                     </div>

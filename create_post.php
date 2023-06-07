@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $content = nl2br($content);
 
     // Prepare and execute the SQL statement to insert the post into the database
-    $stmt = $conn->prepare("INSERT INTO posts (title, content, topics, user_id) VALUES (?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO articles (title, content, topics, user_id) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("sssi", $title, $content, $topics, $_SESSION["user_id"]);
     $stmt->execute();
     $stmt->close();

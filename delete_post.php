@@ -9,7 +9,7 @@ if (isset($_GET["post_id"])) {
     $post_id = $_GET["post_id"];
 
     // Retrieve the blog post from the database
-    $stmt = $conn->prepare("SELECT * FROM posts WHERE post_id = ?");
+    $stmt = $conn->prepare("SELECT * FROM articles WHERE post_id = ?");
     $stmt->bind_param("i", $post_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -25,7 +25,7 @@ if (isset($_GET["post_id"])) {
         $stmt->close();
 
         // Delete the blog post from the database
-        $stmt = $conn->prepare("DELETE FROM posts WHERE post_id = ?");
+        $stmt = $conn->prepare("DELETE FROM articles WHERE post_id = ?");
         $stmt->bind_param("i", $post_id);
         $stmt->execute();
         $stmt->close();

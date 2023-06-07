@@ -39,7 +39,7 @@ if ($count > 0) {
     $placeholders = rtrim(str_repeat('?,', count($followedUserIds)), ',');
 
     // Prepare the SQL statement to retrieve articles from the followed users
-    $stmt = $conn->prepare("SELECT * FROM posts WHERE user_id IN ($placeholders)");
+    $stmt = $conn->prepare("SELECT * FROM articles WHERE user_id IN ($placeholders)");
     $stmt->bind_param(str_repeat('i', count($followedUserIds)), ...$followedUserIds);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -86,14 +86,28 @@ if (isset($_GET["searchQuery"])) {
     <meta charset="UTF-8">
     <title>My Blog</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.css">
+    <link rel="stylesheet" href="css/font.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/all.css">
 </head>
 <body>
 <?php include "navbar.php"; ?>
 
 <div class="container">
     <div class="row">
-        <h1>User Search</h1>
+    <?php
+        // Fetch the user's avatar path from the database
+        // Replace 'your_user_id' with the actual user ID of the logged-in user
+        $stmt = $conn->prepare("SELECT avatar FROM users WHERE user_id = ?");
+        $stmt->bind_param("s", $userId);
+        $stmt->execute();
+        $stmt->bind_result($avatar);
+        $stmt->fetch();
+        $stmt->close();
+        ?>
+
+        <h1 class="text-center">My Feed</h1>
 
         <div class="mb-3 search-dropdown">
             <label for="searchQuery" class="form-label">Search User:</label>

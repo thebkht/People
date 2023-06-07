@@ -9,7 +9,7 @@ if (!isset($_GET["post_id"])) {
 }
 
 // Retrieve the post with author information from the database
-$stmt = $conn->prepare("SELECT posts.*, users.username, users.created_at AS user_created_at FROM posts INNER JOIN users ON posts.user_id = users.user_id WHERE posts.post_id = ?");
+$stmt = $conn->prepare("SELECT articles.*, users.username, users.created_at AS user_created_at FROM articles INNER JOIN users ON articles.user_id = users.user_id WHERE articles.id = ?");
 $stmt->bind_param("i", $_GET["post_id"]);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -17,7 +17,7 @@ $post = $result->fetch_assoc();
 $stmt->close();
 
 // Retrieve comments for the post from the database
-$stmt = $conn->prepare("SELECT comments.comment, users.username FROM comments INNER JOIN users ON comments.user_id = users.user_id WHERE comments.post_id = ?");
+$stmt = $conn->prepare("SELECT comments.content, users.username FROM comments INNER JOIN users ON comments.user_id = users.user_id WHERE comments.article_id = ?");
 $stmt->bind_param("i", $_GET["post_id"]);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -35,35 +35,35 @@ if (isset($_GET["post_id"])) {
         $postViews = $_COOKIE['post_views'];
 
         // Split the cookie value into an array of post IDs
-        $viewedPosts = explode(',', $postViews);
+        $viewedarticles = explode(',', $postViews);
 
-        // Check if the current post ID is already in the viewed posts array
-        if (!in_array($post_id, $viewedPosts)) {
+        // Check if the current post ID is already in the viewed articles array
+        if (!in_array($post_id, $viewedarticles)) {
             // Increment the view count in the database
-            $stmt = $conn->prepare("UPDATE posts SET views = views + 1 WHERE post_id = ?");
+            $stmt = $conn->prepare("UPDATE articles SET views = views + 1 WHERE id = ?");
             $stmt->bind_param("i", $post_id);
             $stmt->execute();
             $stmt->close();
 
-            // Add the current post ID to the viewed posts array
-            $viewedPosts[] = $post_id;
+            // Add the current post ID to the viewed articles array
+            $viewedarticles[] = $post_id;
 
             // Update the post_views cookie
-            $updatedPostViews = implode(',', $viewedPosts);
+            $updatedPostViews = implode(',', $viewedarticles);
             setcookie('post_views', $updatedPostViews, time() + (86400 * 30), '/'); // Set the cookie for 30 days
         }
     } else {
         // If the post_views cookie doesn't exist, create it and set the view count in the database
         setcookie('post_views', $post_id, time() + (86400 * 30), '/'); // Set the cookie for 30 days
 
-        $stmt = $conn->prepare("UPDATE posts SET views = views + 1 WHERE post_id = ?");
+        $stmt = $conn->prepare("UPDATE articles SET views = views + 1 WHERE id = ?");
         $stmt->bind_param("i", $post_id);
         $stmt->execute();
         $stmt->close();
     }
 
     // Retrieve the current post from the database
-    $stmt = $conn->prepare("SELECT * FROM posts WHERE post_id = ?");
+    $stmt = $conn->prepare("SELECT * FROM articles WHERE id = ?");
     $stmt->bind_param("i", $post_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -77,7 +77,7 @@ if (isset($_GET["post_id"])) {
         $relatedArticles = [];
 
         foreach ($topics as $topic) {
-            $stmt = $conn->prepare("SELECT * FROM posts WHERE topics LIKE ? AND post_id != ? ORDER BY created_at DESC LIMIT 3");
+            $stmt = $conn->prepare("SELECT * FROM articles WHERE topics LIKE ? AND id != ? ORDER BY created_at DESC LIMIT 3");
             $likeTopic = '%' . trim($topic) . '%';
             $stmt->bind_param("si", $likeTopic, $post_id);
             $stmt->execute();

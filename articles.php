@@ -3,7 +3,7 @@
 require_once "db_connection.php";
 
 // Fetch all books from the database
-$stmt = $conn->prepare("SELECT * FROM posts");
+$stmt = $conn->prepare("SELECT * FROM articles");
 $stmt->execute();
 $articles = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search'])) {
     $keyword = $_POST['search'];
 
     // Prepare the SQL statement with a search query
-    $stmt = $conn->prepare("SELECT * FROM posts WHERE title LIKE ?");
+    $stmt = $conn->prepare("SELECT * FROM articles WHERE title LIKE ?");
     $searchKeyword = '%' . $keyword . '%';
     $stmt->bind_param("s", $searchKeyword);
     $stmt->execute();

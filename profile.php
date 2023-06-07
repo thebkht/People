@@ -18,12 +18,12 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
 
-// Retrieve the user's blog posts from the database
-$stmt = $conn->prepare("SELECT * FROM posts WHERE user_id = ? ORDER BY created_at DESC");
+// Retrieve the user's blog articles from the database
+$stmt = $conn->prepare("SELECT * FROM articles WHERE user_id = ? ORDER BY created_at DESC");
 $stmt->bind_param("i", $_SESSION["user_id"]);
 $stmt->execute();
 $result = $stmt->get_result();
-$posts = $result->fetch_all(MYSQLI_ASSOC);
+$articles = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 ?>
 
@@ -50,7 +50,7 @@ $stmt->close();
         <h2>Your Blogs</h2>
 
         <div class="row align-self-stretch">
-            <?php foreach ($posts as $article): ?>
+            <?php foreach ($articles as $article): ?>
                 <div class="col-md-4 mb-3">
                     <div class="card mb-3 h-100">
                         <div class="card-body">
@@ -60,8 +60,8 @@ $stmt->close();
                         </div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <div>
-                            <a href="edit_post.php?post_id=<?php echo $article['post_id']; ?>" class="btn btn-primary">Edit</a>
-                            <a href="delete_post.php?post_id=<?php echo $article['post_id']; ?>" class="btn btn-danger">Delete</a>
+                            <a href="edit_post.php?post_id=<?php echo $article['id']; ?>" class="btn btn-primary">Edit</a>
+                            <a href="delete_post.php?post_id=<?php echo $article['id']; ?>" class="btn btn-danger">Delete</a>
 
                             </div>
                             <p class="card-text d-inline"><small class="text-muted"><?php echo date("F j, Y", strtotime($article["created_at"])); ?></small></p>

@@ -9,7 +9,7 @@ if (isset($_GET["post_id"])) {
     $post_id = $_GET["post_id"];
 
     // Retrieve the blog post from the database
-    $stmt = $conn->prepare("SELECT * FROM posts WHERE post_id = ?");
+    $stmt = $conn->prepare("SELECT * FROM articles WHERE id = ?");
     $stmt->bind_param("i", $post_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -29,7 +29,7 @@ if (isset($_GET["post_id"])) {
             $content = nl2br($content);
 
             // Update the post in the database
-            $stmt = $conn->prepare("UPDATE posts SET title = ?, content = ?, topics = ? WHERE post_id = ?");
+            $stmt = $conn->prepare("UPDATE articles SET title = ?, content = ?, topics = ? WHERE post_id = ?");
             $stmt->bind_param("sssi", $title, $content, $topics, $post_id);
             $stmt->execute();
             $stmt->close();

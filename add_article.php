@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $topics = $_POST["topics"];
 
     // Insert the new article into the database
-    $stmt = $conn->prepare("INSERT INTO posts (user_id, title, content, topics) VALUES (?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO articles (user_id, title, content, topics) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("isss", $userId, $title, $content, $topics);
     $stmt->execute();
     $stmt->close();
@@ -25,13 +25,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     header("Location: index.php");
     exit();
 }
-
-// Retrieve the list of topics from the database
-$stmt = $conn->prepare("SELECT * FROM topics");
-$stmt->execute();
-$result = $stmt->get_result();
-$topics = $result->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
 ?>
 
 <!DOCTYPE html>
