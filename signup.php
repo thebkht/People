@@ -54,11 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <script src="js/load.js"></script>
 </head>
 <body>
-    <div id="load">
-        <div class="loading"><img src="img/icon.png" id="load-img" alt=""></div>
-    </div>
-    <div id="page" class="page">
-        <div class="content d-flex p-4" style="height: 100vh;">
+        <div class="content d-flex p-4">
             <div class="container-fluid">
                 <div class="row h-100">
                     <div class="col-5 d-flex flex-column justify-content-between background">
@@ -84,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <?php if (!$showForm) { ?>
         <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST" class="w-100 mt-4">
             <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email">
+                <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email" required>
                 <label for="floatingInput" class="label">Email address</label>
             </div>
             <div class="error"><?php echo $error; ?></div>
@@ -95,30 +91,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <?php } else { ?>
         <form action="process_signup.php" method="POST" class="w-100 mt-4">
         <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email" value="<?php echo $email; ?>">
+                <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email" value="<?php echo $email; ?>" required readonly>
                 <label for="floatingInput" class="label">Email address</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="floatingName" placeholder="Your Name" name="name">
+                <input type="text" class="form-control" id="floatingName" placeholder="Your Name" name="name" required>
                 <label for="floatingName" class="label">Your Name</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="floatingUsername" placeholder="Username" name="username">
+                <input type="text" class="form-control" id="floatingUsername" placeholder="Username" name="username" required>
                 <label for="floatingUsername" class="label">Username</label>
             </div>
             <h5 class="mb-3 signup-form__title">Security</h5>
                             <div class="form-floating mb-2">
-                                <input type="password" class="form-control" id="Password" placeholder="Password" name="password">
+                                <input type="password" class="form-control" id="Password" placeholder="Password" name="password" required>
                                 <label for="Password">Password</label>
-                                <span class="password-toggle" onclick="togglePasswordVisibility('password', 'password-icon')">
-        <i class="fas fa-eye" id="password-icon"></i>
+                                <span class="password-toggle" onclick="togglePasswordVisibility('Password', 'password-icon')">
+        <i class="far fa-eye" id="password-icon"></i>
     </span>
                             </div>
                             <div class="form-floating mb-4">
-                                <input type="password" class="form-control" id="ConfimPassword" placeholder="Password" name="confirm_password">
+                                <input type="password" class="form-control" id="ConfimPassword" placeholder="Password" name="confirm_password" required>
                                 <label for="ConfimPassword">Confirm password</label>
-                                <span class="password-toggle" onclick="togglePasswordVisibility('password', 'password-icon')">
-        <i class="fas fa-eye" id="password-icon"></i>
+                                <span class="password-toggle" onclick="togglePasswordVisibility('ConfimPassword', 'password-icon')">
+        <i class="far fa-eye" id="password-icon"></i>
     </span>
                             </div>
             <div class="col-auto">
@@ -127,68 +123,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </form>
     <?php } ?>
 
-
-                        <!-- <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST" class="w-100 mt-4">
-        <?php if (!$showForm) { ?>
-            <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email">
-                <label for="floatingInput" class="label">Email address</label>
-            </div>
-            <div class="error"><?php echo $error; ?></div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-success w-100 pt-3 pb-3">Check Email</button>
-            </div>
-        <?php } else { ?>
-            <div class="form-floating mb-2">
-                                <input type="email" class="form-control" id="email" placeholder="name@example.com" value="<?php echo $email; ?>">
-                                <label for="email" class="label">Email address</label>
-                            </div>
-                            <div class="form-floating mb-2">
-                                <input type="text" class="form-control" id="firstname" placeholder="name@example.com" name="name">
-                                <label for="firstname" class="label">First Name</label>
-                            </div>
-                            <div class="form-floating mb-2">
-                                <input type="text" class="form-control" id="firstname" placeholder="name@example.com" name="username">
-                                <label for="firstname" class="label">Username</label>
-                            </div>
-                            <h5 class="mb-3 signup-form__title">Security</h5>
-                            <div class="form-floating mb-2">
-                                <input type="password" class="form-control" id="Password" placeholder="Password" name="password">
-                                <label for="Password">Password</label>
-                            </div>
-                            <div class="form-floating mb-4">
-                                <input type="password" class="form-control" id="ConfimPassword" placeholder="Password" name="confirm_password">
-                                <label for="ConfimPassword">Confirm password</label>
-                            </div>
-                            <div class="col-auto">
-                                <button type="submit" class="btn btn-success w-100 pt-3 pb-3">Submit and Continue</button>
-                              </div>
-        <?php } ?> -->
-    </form>
-                        <!-- <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST" class="w-100 mt-4">
-                            <div class="form-floating mb-3">
-                                <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-                                <label for="floatingInput" class="label">Email address</label>
-                            </div>
-                            <div class="form-check mb-4">
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                <label class="form-check-label" for="flexCheckDefault">
-                                  I agree with the terms and conditions
-                                </label>
-                            </div>
-                            <div class="col-auto">
-                                <button type="submit" class="btn btn-success w-100 pt-3 pb-3">Sign Up</button>
-                              </div>
-                        </form> -->
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script> 
+    <script src="js/script.js"></script>   
 </body>
 </html>

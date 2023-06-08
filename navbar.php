@@ -19,7 +19,7 @@ $userId = $_SESSION["user_id"];
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav align-items-center">
                 <!-- <form action="search.php" method="GET" class="search-form form-group">
                     <input type="text" name="query" class="form-control" placeholder="Search articles...">
                     <button type="submit" class="btn btn-primary">Search</button>
@@ -49,10 +49,10 @@ $userId = $_SESSION["user_id"];
         ?>
     </a>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-        <li><a class="dropdown-item" href="#"><i class="fas fa-user"></i> Profile</a></li>
+        <li><a class="dropdown-item" href="user.php?user_id=<?php echo $_SESSION['user_id']; ?>"><i class="fas fa-user"></i> Profile</a></li>
         <li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i> Settings</a></li>
         <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        <li><a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
     </ul>
 </li>
                     <!-- <li class="nav-item">

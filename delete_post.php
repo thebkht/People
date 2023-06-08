@@ -9,7 +9,7 @@ if (isset($_GET["post_id"])) {
     $post_id = $_GET["post_id"];
 
     // Retrieve the blog post from the database
-    $stmt = $conn->prepare("SELECT * FROM articles WHERE post_id = ?");
+    $stmt = $conn->prepare("SELECT * FROM articles WHERE id = ?");
     $stmt->bind_param("i", $post_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -19,13 +19,13 @@ if (isset($_GET["post_id"])) {
     // Check if the user is the author of the post
     if ($post && $_SESSION["user_id"] === $post["user_id"]) {
         // Delete the comments associated with the post
-        $stmt = $conn->prepare("DELETE FROM comments WHERE post_id = ?");
+        $stmt = $conn->prepare("DELETE FROM comments WHERE id = ?");
         $stmt->bind_param("i", $post_id);
         $stmt->execute();
         $stmt->close();
 
         // Delete the blog post from the database
-        $stmt = $conn->prepare("DELETE FROM articles WHERE post_id = ?");
+        $stmt = $conn->prepare("DELETE FROM articles WHERE id = ?");
         $stmt->bind_param("i", $post_id);
         $stmt->execute();
         $stmt->close();

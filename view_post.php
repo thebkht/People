@@ -31,8 +31,8 @@ if (isset($_GET["post_id"])) {
     $post_id = $_GET["post_id"];
 
     // Check if the post_views cookie exists
-    if (isset($_COOKIE['post_views'])) {
-        $postViews = $_COOKIE['post_views'];
+    if (isset($_COOKIE['views'])) {
+        $postViews = $_COOKIE['views'];
 
         // Split the cookie value into an array of post IDs
         $viewedarticles = explode(',', $postViews);
@@ -50,11 +50,11 @@ if (isset($_GET["post_id"])) {
 
             // Update the post_views cookie
             $updatedPostViews = implode(',', $viewedarticles);
-            setcookie('post_views', $updatedPostViews, time() + (86400 * 30), '/'); // Set the cookie for 30 days
+            setcookie('views', $updatedPostViews, time() + (86400 * 30), '/'); // Set the cookie for 30 days
         }
     } else {
         // If the post_views cookie doesn't exist, create it and set the view count in the database
-        setcookie('post_views', $post_id, time() + (86400 * 30), '/'); // Set the cookie for 30 days
+        setcookie('views', $post_id, time() + (86400 * 30), '/'); // Set the cookie for 30 days
 
         $stmt = $conn->prepare("UPDATE articles SET views = views + 1 WHERE id = ?");
         $stmt->bind_param("i", $post_id);
@@ -107,7 +107,9 @@ if (isset($_GET["post_id"])) {
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>View Post</title>
+    <title>
+        <?php echo $post["title"]; ?> - Readit
+    </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css">
 </head>

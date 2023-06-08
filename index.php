@@ -84,12 +84,19 @@ if (isset($_GET["searchQuery"])) {
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>My Blog</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/all.css">
-    <link rel="stylesheet" href="css/font.css">
+    <title>Readit</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/all.css">
+    <link rel="shortcut icon" href="img/icon.png" type="image/x-icon">
+    <link rel="icon" href="img/favicon_32x32.png" sizes="32x32">
+    <link rel="icon" href="img/favicon_48x48.png" sizes="48x48">
+    <link rel="icon" href="img/favicon_96x96.png" sizes="96x96">
+    <link rel="icon" href="img/favicon_144x144.png" sizes="144x144">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/load.js"></script>
 </head>
 <body>
 <?php include "navbar.php"; ?>
@@ -110,34 +117,36 @@ if (isset($_GET["searchQuery"])) {
         <h1 class="text-center">My Feed</h1>
 
         <div class="mb-3 search-dropdown">
-            <label for="searchQuery" class="form-label">Search User:</label>
-            <input type="text" class="form-control" id="searchQuery" name="searchQuery" placeholder="Enter username or email" autocomplete="off">
+            <input type="text" class="form-control rounded-pill" id="searchQuery" name="searchQuery" placeholder="Search" autocomplete="off">
             <div class="dropdown-menu mt-3" id="searchResults" aria-labelledby="searchQuery">
             </div>
         </div>
     </div>
-
-    <h1>Home</h1>
-    <div class="d-flex">
+    <div class="d-flex w-100">
     <?php if (!empty($articles)): ?>
         <?php foreach ($articles as $article): ?>
             <div class="col-4 me-2 mb-3">
-            <a href="view_post.php?post_id=<?php echo $article['post_id']; ?>">
+            <a href="view_post.php?post_id=<?php echo $article['id']; ?>">
             <div class="card h-100 mb-3">
-                <div class="card-header">
+                <div class="card-header d-flex">
                 <?php
             // Retrieve the publisher's information
             $publisherId = $article['user_id'];
-            $stmt = $conn->prepare("SELECT name, username FROM users WHERE user_id = ?");
+            $stmt = $conn->prepare("SELECT name, username, avatar FROM users WHERE user_id = ?");
             $stmt->bind_param("i", $publisherId);
             $stmt->execute();
             $result = $stmt->get_result();
             $publisher = $result->fetch_assoc();
             $stmt->close();
             ?>
+            <div class="publisher-photo rounded-circle me-3">
+            <img src="<?php echo $publisher['avatar']; ?>" class="h-100" alt="">
+            </div>
+            <div class="publisher">
             <span><?php echo $publisher['name']; ?></span>
             <br>
-            <span>@<?php echo $publisher['username']; ?></span>    
+            <span>@<?php echo $publisher['username']; ?></span> 
+            </div>   
                 </div>
                 <div class="card-body">
                     <h5 class="card-title"><?php echo $article['title']; ?></h5>
@@ -153,7 +162,7 @@ if (isset($_GET["searchQuery"])) {
             
         <?php endforeach; ?>
     <?php else: ?>
-        <p>No articles found.</p>
+        <p class="text-center w-100">No articles found.</p>
     <?php endif; ?>
     </div>
     
