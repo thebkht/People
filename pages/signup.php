@@ -39,29 +39,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up | workster</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css">
+    <title>Sign Up - Readit</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/all.css">
-    <link rel="shortcut icon" href="img/icon.png" type="image/x-icon">
-    <link rel="icon" href="img/favicon_32x32.png" sizes="32x32">
-    <link rel="icon" href="img/favicon_48x48.png" sizes="48x48">
-    <link rel="icon" href="img/favicon_96x96.png" sizes="96x96">
-    <link rel="icon" href="img/favicon_144x144.png" sizes="144x144">
-    <script src="js/jquery.min.js"></script>
-    <script src="js/load.js"></script>
+    <link rel="stylesheet" href="../css/all.css">
+    <link rel="stylesheet" href="../css/font.css">
+    <link rel="shortcut icon" href="../img/icon.png" type="image/x-icon">
+    <link rel="icon" href="../img/favicon_32x32.png" sizes="32x32">
+    <link rel="icon" href="../img/favicon_48x48.png" sizes="48x48">
+    <link rel="icon" href="../img/favicon_96x96.png" sizes="96x96">
+    <link rel="icon" href="../img/favicon_144x144.png" sizes="144x144">
 </head>
 <body>
         <div class="content d-flex p-4">
             <div class="container-fluid">
                 <div class="row h-100">
                     <div class="col-5 d-flex flex-column justify-content-between background">
-                        <div class="d-flex justify-content-start">
+                        <div class="d-flex justify-con../tent-start">
                             <div class="image overflow-hidden d-flex justify-content-center">
-                                <img src="img/header-img.png" style="width: 110%;" class="mb-4" alt="">
-                            </div>
+                                <img src="../img/header-img.png" style="width: 110%;" class="mb-4" alt="">
+                            </div>../
                         </div>
                         <div class="text justify-content-end">
                             <h1 class="title m-5">Stay updated on your network</h1>
@@ -73,12 +72,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </div>
                     <div class="signup-form col-4 d-flex flex-column justify-content-center align-items-center">
                         <div class="logo">
-                            <img src="img/icon.png" class="m-5 mt-0" height="60px" alt="">
+                            <img src="../img/icon.png" class="m-4 mt-0" height="60px" alt="">
                         </div>
                         <h2>Sign Up</h2>
                         <p class="mb-3 text">Take the next step and sign in to your account</p>
                         <?php if (!$showForm) { ?>
-        <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST" class="w-100 mt-4">
+        <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST" class="w-100 mt-3 signup-form">
             <div class="form-floating mb-3">
                 <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email" required>
                 <label for="floatingInput" class="label">Email address</label>
@@ -89,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
         </form>
     <?php } else { ?>
-        <form action="process_signup.php" method="POST" class="w-100 mt-4">
+        <form action="process_signup.php" method="POST" class="w-100 mt-3 signup-form">
         <div class="form-floating mb-3">
                 <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email" value="<?php echo $email; ?>" required readonly>
                 <label for="floatingInput" class="label">Email address</label>
@@ -103,14 +102,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <label for="floatingUsername" class="label">Username</label>
             </div>
             <h5 class="mb-3 signup-form__title">Security</h5>
-                            <div class="form-floating mb-2">
+                            <div class="form-floating mb-2 d-flex password-input">
                                 <input type="password" class="form-control" id="Password" placeholder="Password" name="password" required>
                                 <label for="Password">Password</label>
                                 <span class="password-toggle" onclick="togglePasswordVisibility('Password', 'password-icon')">
         <i class="far fa-eye" id="password-icon"></i>
     </span>
                             </div>
-                            <div class="form-floating mb-4">
+                            <div class="form-floating mb-4 d-flex password-input">
                                 <input type="password" class="form-control" id="ConfimPassword" placeholder="Password" name="confirm_password" required>
                                 <label for="ConfimPassword">Confirm password</label>
                                 <span class="password-toggle" onclick="togglePasswordVisibility('ConfimPassword', 'password-icon')">
@@ -130,8 +129,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script> 
-    <script src="js/script.js"></script>   
+        <script src="../js/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>   
 </body>
 </html>

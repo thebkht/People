@@ -1,0 +1,265 @@
+<?php
+// Include the necessary database connection code
+require_once "db_connection.php";
+
+session_start();
+if (!isset($_SESSION["user_id"])) {
+    // Redirect the user to the login page or display an error message
+    header("Location: login.php");
+    exit();
+}
+
+$followerId = $_SESSION["user_id"];
+
+// Check if the user_id is provided in the URL
+if (isset($_GET["user_id"])) {
+    $followedId = $_GET["user_id"];
+
+    // Retrieve user information from the database
+    $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
+    $stmt->bind_param("i", $followedId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $member = $result->fetch_assoc();
+    $stmt->close();
+
+    // Retrieve user's articles from the database
+    $stmt = $conn->prepare("SELECT * FROM articles WHERE user_id = ? ORDER BY `articles`.`created_at` DESC");
+    $stmt->bind_param("i", $followedId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $articles = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    // Perform the follow action
+    if (isset($_POST["user_id"])) {
+        $followedId = $_POST["user_id"];
+
+        // Check if the user is already following the profile user
+        $stmt = $conn->prepare("SELECT * FROM user_followers WHERE follower_id = ? AND followed_id = ?");
+        $stmt->bind_param("ii", $followerId, $followedId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            // The user is already following, so unfollow
+            $stmt = $conn->prepare("DELETE FROM user_followers WHERE follower_id = ? AND followed_id = ?");
+            $stmt->bind_param("ii", $followerId, $followedId);
+            $stmt->execute();
+            $isFollowing = false;
+        } else {
+            // The user is not following, so follow
+            $stmt = $conn->prepare("INSERT INTO user_followers (follower_id, followed_id) VALUES (?, ?)");
+            $stmt->bind_param("ii", $followerId, $followedId);
+            $stmt->execute();
+            $isFollowing = true;
+        }
+
+        $stmt->close();
+    }
+
+    // Retrieve the number of followers for the user
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM user_followers WHERE followed_id = ?");
+    $stmt->bind_param("i", $followedId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $followerCount = $result->fetch_row()[0];
+    $stmt->close();
+
+    // Retrieve the number of articles for the user
+    $postCount = count($articles);
+}
+
+// Check if the search query is provided in the GET request
+if (isset($_GET["searchQuery"])) {
+    $searchQuery = $_GET["searchQuery"];
+
+    // Prepare the SQL statement to search for users
+    $stmt = $conn->prepare("SELECT * FROM articles WHERE user_id = ? AND title = ? ");
+    $searchTerm = "%$searchQuery%";
+    $stmt->bind_param("is", $followedId, $searchTerm);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $posts = $result->fetch_all(MYSQLI_ASSOC);
+    $articles = $posts; 
+    $stmt->close();
+
+    // Prepare the search results as JSON
+    $searchResults = [];
+    if (count($posts) > 0) {
+        foreach ($posts as $post) {
+            $searchResults[] = [
+                'post_id' => $post['id'],
+                'title' => $post['title'],
+                'content' => $post['content'],
+                'avatar' => $post['avatar']
+            ];
+        }
+    }
+
+    // Send the search results as JSON response
+    header('Content-Type: application/json');
+    echo json_encode($searchResults);
+    exit();
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>
+        <?php 
+            if (isset($member["name"])){
+                echo $member["name"];
+            } else{
+                echo $member["username"];
+            }
+        ?> - Readit
+    </title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/all.css">
+    <link rel="stylesheet" href="../css/font.css">
+    <link rel="shortcut icon" href="../img/icon.png" type="image/x-icon">
+    <link rel="icon" href="../img/favicon_32x32.png" sizes="32x32">
+    <link rel="icon" href="../img/favicon_48x48.png" sizes="48x48">
+    <link rel="icon" href="../img/favicon_96x96.png" sizes="96x96">
+    <link rel="icon" href="../img/favicon_144x144.png" sizes="144x144">
+</head>
+<body style="background-color: #fff;">
+<?php include "navbar.php"; ?>
+
+<div class="container">
+    <div class="row justify-content-between mb-5">
+        <div class="col-3">
+            <div class="profile-photo mb-3">
+                <img src="../img/avatars/<?php echo $member['avatar']; ?>" class="h-100 rounded-circle" alt="<?php echo $member['name']; ?>'s profile photo">
+            </div>
+            <h5>
+                <?php echo $member['name']; ?>
+                <?php if ($member['verified']): ?>
+                    <i class="fa-solid fa-badge-check text-primary ms-1"></i>
+                <?php endif; ?>
+            </h5>
+            <h6 class="mb-3">@<?php echo $member['username']; ?></h6>
+            <p>Email: <?php echo $member['email']; ?></p>
+            <p><?php echo $followerCount; ?> Followers | <?php echo $postCount; ?> articles</p>
+
+            <!-- Follow Button -->
+            <?php if ($_SESSION['user_id'] !== $member['user_id']): ?>
+                <?php
+                // Check if the user is already following the profile user
+                $stmt = $conn->prepare("SELECT * FROM user_followers WHERE follower_id = ? AND followed_id = ?");
+                $stmt->bind_param("ii", $followerId, $followedId);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $isFollowing = $result->num_rows > 0;
+                $stmt->close();
+                ?>
+
+                <form action="user.php?user_id=<?php echo $followedId; ?>" method="POST">
+                    <input type="hidden" name="user_id" value="<?php echo $followedId; ?>">
+                    <?php if ($isFollowing): ?>
+                        <button type="submit" class="btn btn-outline-success w-100">Following</button>
+                    <?php else: ?>
+                        <button type="submit" class="btn btn-success w-100">Follow</button>
+                    <?php endif; ?>
+                </form>
+                <?php else: ?>
+                <a href="edit_profile.php" class="btn btn-outline-success w-100">Edit Profile</a>
+            <?php endif; ?>
+        </div>
+        <div class="col-8">
+            <h2>Articles</h2>
+            <div class="user-articles">
+            <div class="mb-5 mt-4 w-100 m-auto col-6 search-dropdown">
+            <div class="search-input rounded-pill w-100 d-flex align-items-center">
+            <i class="fa-regular fa-magnifying-glass"></i>
+            <input type="text" class="form-control w-100 rounded-pill" id="searchQuery" name="searchQuery" placeholder="Search" autocomplete="off">
+            </div>
+            <div class="dropdown-menu mt-3 w-100" id="searchResults" aria-labelledby="searchQuery">
+            </div>
+        </div>
+            <?php if (count($articles) > 0): ?>
+                <?php foreach ($articles as $article): ?>
+                    <div class="card mb-3 w-100 me-3">
+                        <div class="card-body">
+                        <a href="view_post.php?post_id=<?php echo $article['id']; ?>"><h5 class="card-title"><?php echo $article['title']; ?></h5></a>
+                            <p class="card-text"><?php echo substr($article['content'], 0, 500); ?>...</p>
+                        </div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                        <?php if ($_SESSION['user_id'] === $article['user_id']): ?>
+                            <div class="action-btn">
+                            <a href="edit_post.php?post_id=<?php echo $article['id']; ?>" class="btn btn-success">Edit</a>
+                            <a href="delete_post.php?post_id=<?php echo $article['id']; ?>" class="btn btn-danger">Delete</a>
+                            </div>
+                        <?php endif; ?>
+                        <div class="stats d-flex align-items-center">
+                        <p class="card-text d-inline mb-0 me-3"><?php echo date("F j, Y", strtotime($article["created_at"])); ?></p>
+                            <p class="card-text d-inline mb-0 text-muted me-3"><i class="far fa-eye me-1"></i> <?php echo $article['views']; ?></p>
+                <p class="card-text d-inline mb-0 text-muted"><i class="far fa-comments me-1"></i> <?php echo $article['comments']; ?></p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>This user has no posts</p>
+            <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../js/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        var searchQueryInput = $('#searchQuery');
+        var searchResultsContainer = $('#searchResults');
+
+        searchQueryInput.on('input', function() {
+            var searchQuery = $(this).val();
+            if (searchQuery.length > 0) {
+                // Send AJAX request to search for users
+                $.ajax({
+                    url: 'search_article_ajax.php?user_id=' + <?php echo $followedId; ?>,
+                    method: 'GET',
+                    data: { searchQuery: searchQuery },
+                    dataType: 'json',
+                    success: function(response) {
+                        // Clear previous search results
+                        searchResultsContainer.empty();
+
+                        // Display search results using Bootstrap dropdown
+                        if (response.length > 0) {
+                            response.forEach(function(post) {
+                                console.log(post);
+                                var dropdownItem = $('<a class="dropdown-item"></a>')
+                                .attr('href', 'view_post.php?post_id=' + post.post_id) // Set user_id in the URL
+                                .text(post.title);
+                                searchResultsContainer.append(dropdownItem);
+                            });
+                        } else {
+                            var dropdownItem = $('<a class="dropdown-item disabled"></a>').text('No article found');
+                            searchResultsContainer.append(dropdownItem);
+                        }
+
+                        // Show the dropdown and apply custom styles
+                        searchResultsContainer.addClass('show custom-dropdown-menu');
+                    },
+                });
+            } else {
+                // Hide the dropdown if search query is empty
+                searchResultsContainer.removeClass('show custom-dropdown-menu');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

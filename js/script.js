@@ -1,3 +1,19 @@
+$(document).ready(function() {
+    // Get the current URL
+    var currentUrl = window.location.href;
+  
+    // Loop through each nav-link
+    $('.nav-link').each(function() {
+      var linkUrl = $(this).attr('href');
+  
+      // Check if the URL contains the href attribute
+      if (currentUrl.indexOf(linkUrl) !== -1) {
+        // Add the "disabled" class to the matched nav-link
+        $(this).addClass('disabled');
+      }
+    });
+  });
+
 function togglePasswordVisibility(inputId, iconId) {
     var passwordInput = document.getElementById(inputId);
     var passwordIcon = document.getElementById(iconId);
@@ -12,3 +28,23 @@ function togglePasswordVisibility(inputId, iconId) {
         passwordIcon.classList.add("fa-eye");
     }
 }
+
+
+var images = document.getElementsByTagName('img');
+
+  for (var i = 0; i < images.length; i++) {
+    var image = images[i];
+
+    image.addEventListener('load', function() {
+        if(image.classList.contains('placeholder')){
+            image.classList.remove('placeholder');
+            console.log('removed');
+        }
+      console.log('Image loaded successfully');
+    });
+
+    image.addEventListener('error', function() {
+        image.classList.add('placeholder');
+      console.log('Failed to load image');
+    });
+  }  

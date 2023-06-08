@@ -1,83 +1,14 @@
 <?php
-// Include the necessary database connection code
-require_once "db_connection.php";
 
-session_start();
-if (!isset($_SESSION["user_id"])) {
-    // Redirect the user to the login page or display an error message
-    header("Location: login.php");
-    exit();
-}
-
-$userId = $_SESSION["user_id"];
-
-// Check if the user is following someone
-$stmt = $conn->prepare("SELECT COUNT(*) FROM user_followers WHERE follower_id = ?");
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$result = $stmt->get_result();
-$count = $result->fetch_row()[0];
-$stmt->close();
-
-$articles = [];
-if ($count > 0) {
-    // Retrieve the list of followed user IDs
-    $stmt = $conn->prepare("SELECT followed_id FROM user_followers WHERE follower_id = ?");
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $followedUsers = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-
-    // Create an array to store the followed user IDs
-    $followedUserIds = [];
-    foreach ($followedUsers as $followedUser) {
-        $followedUserIds[] = $followedUser['followed_id'];
+    // Include the necessary database connection code
+    require_once "pages/db_connection.php";
+    
+    session_start();
+    if (isset($_SESSION["user_id"])) {
+        // Redirect the user to the login page or display an error message
+        header("Location: app.php");
+        exit();
     }
-
-    // Prepare the placeholders for the IN clause
-    $placeholders = rtrim(str_repeat('?,', count($followedUserIds)), ',');
-
-    // Prepare the SQL statement to retrieve articles from the followed users
-    $stmt = $conn->prepare("SELECT * FROM articles WHERE user_id IN ($placeholders)");
-    $stmt->bind_param(str_repeat('i', count($followedUserIds)), ...$followedUserIds);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $articles = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-}
-
-// Check if the search query is provided in the GET request
-if (isset($_GET["searchQuery"])) {
-    $searchQuery = $_GET["searchQuery"];
-
-    // Prepare the SQL statement to search for users
-    $stmt = $conn->prepare("SELECT * FROM users WHERE username LIKE ? OR email LIKE ?");
-    $searchTerm = "%$searchQuery%";
-    $stmt->bind_param("ss", $searchTerm, $searchTerm);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $users = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-
-    // Prepare the search results as JSON
-    $searchResults = [];
-    if (count($users) > 0) {
-        foreach ($users as $user) {
-            $searchResults[] = [
-                'username' => $user['username'],
-                'email' => $user['email'],
-                'user_id' => $user['user_id']
-            ];
-        }
-    }
-
-    // Send the search results as JSON response
-    header('Content-Type: application/json');
-    echo json_encode($searchResults);
-    exit();
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -85,135 +16,62 @@ if (isset($_GET["searchQuery"])) {
 <head>
     <meta charset="UTF-8">
     <title>Readit</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/all.css">
     <link rel="shortcut icon" href="img/icon.png" type="image/x-icon">
     <link rel="icon" href="img/favicon_32x32.png" sizes="32x32">
     <link rel="icon" href="img/favicon_48x48.png" sizes="48x48">
     <link rel="icon" href="img/favicon_96x96.png" sizes="96x96">
     <link rel="icon" href="img/favicon_144x144.png" sizes="144x144">
-    <script src="js/jquery.min.js"></script>
-    <script src="js/load.js"></script>
+
 </head>
 <body>
-<?php include "navbar.php"; ?>
-
-<div class="container">
-    <div class="row">
-    <?php
-        // Fetch the user's avatar path from the database
-        // Replace 'your_user_id' with the actual user ID of the logged-in user
-        $stmt = $conn->prepare("SELECT avatar FROM users WHERE user_id = ?");
-        $stmt->bind_param("s", $userId);
-        $stmt->execute();
-        $stmt->bind_result($avatar);
-        $stmt->fetch();
-        $stmt->close();
-        ?>
-
-        <h1 class="text-center">My Feed</h1>
-
-        <div class="mb-3 search-dropdown">
-            <input type="text" class="form-control rounded-pill" id="searchQuery" name="searchQuery" placeholder="Search" autocomplete="off">
-            <div class="dropdown-menu mt-3" id="searchResults" aria-labelledby="searchQuery">
+<nav class="navbar navbar-expand-lg mb-4 landing-nav">
+        <div class="container">
+            <a class="navbar-brand" href="index.php">
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <path d="m30,0h0C13.44,0,0,13.44,0,30h0c0,16.56,13.44,30,30,30h0c16.56,0,30-13.44,30-30h0C60,13.44,46.58,0,30,0Zm0,17.19c2.23,0,4.04,1.81,4.04,4.04s-1.81,4.04-4.04,4.04-4.04-1.81-4.04-4.04,1.81-4.04,4.04-4.04Zm16.14,12.51c-3.23,1.05-6.6,1.63-10.07,1.91v6.11c0,2.81-2.28,5.09-5.09,5.09h-1.93c-2.81,0-5.09-2.28-5.09-5.09v-6.11c-3.47-.28-6.86-.86-10.07-1.91-.89-.3-1.51-1.12-1.51-2.07,0-1.46,1.39-2.49,2.79-2.09,4.68,1.33,9.68,1.75,14.84,1.75s10.16-.42,14.84-1.75c1.4-.4,2.79.65,2.79,2.09-.02.93-.61,1.77-1.51,2.07Z"/>
+</svg>
+                Readit.
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                <!-- <form action="search.php" method="GET" class="search-form form-group">
+                    <input type="text" name="query" class="form-control" placeholder="Search articles...">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form> -->  
+                    <li class="nav-item mt-2 mb-2">
+                        <a class="nav-link btn btn-outline-light me-3" href="pages/login.php">Login</a>
+                    </li>
+                    <li class="nav-item mt-2 mb-2">
+                        <a class="nav-link btn btn-light" href="pages/signup.php">Join Now</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="header">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+              <div class="col-10 text-center">
+                <div class="text text-white">
+                  <h2 class="text-center">Discover and Connect with Like-minded People</h2>
+                  <p class="text-center">Expand Your Network and Unleash New Possibilities</p>
+              </div>
+              <img src="img/header-img.png" class="w-100" alt="">
+              </div>
             </div>
         </div>
     </div>
-    <div class="d-flex w-100">
-    <?php if (!empty($articles)): ?>
-        <?php foreach ($articles as $article): ?>
-            <div class="col-4 me-2 mb-3">
-            <a href="view_post.php?post_id=<?php echo $article['id']; ?>">
-            <div class="card h-100 mb-3">
-                <div class="card-header d-flex">
-                <?php
-            // Retrieve the publisher's information
-            $publisherId = $article['user_id'];
-            $stmt = $conn->prepare("SELECT name, username, avatar FROM users WHERE user_id = ?");
-            $stmt->bind_param("i", $publisherId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $publisher = $result->fetch_assoc();
-            $stmt->close();
-            ?>
-            <div class="publisher-photo rounded-circle me-3">
-            <img src="<?php echo $publisher['avatar']; ?>" class="h-100" alt="">
-            </div>
-            <div class="publisher">
-            <span><?php echo $publisher['name']; ?></span>
-            <br>
-            <span>@<?php echo $publisher['username']; ?></span> 
-            </div>   
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title"><?php echo $article['title']; ?></h5>
-                    <p class="card-text"><?php echo substr($article['content'], 0, 200); ?>...</p>
-                </div>
-                <div class="card-footer d-flex justify-content-between">
-                <p class="card-text d-inline mb-0"><small class="text-muted">Views: <?php echo $article['views']; ?></small></p>
-                <p class="card-text d-inline mb-0"><small class="text-muted"><?php echo date("F j, Y", strtotime($article["created_at"])); ?></small></p>
-                </div>
-            </div>
-            </a>
-            </div>
-            
-        <?php endforeach; ?>
-    <?php else: ?>
-        <p class="text-center w-100">No articles found.</p>
-    <?php endif; ?>
-    </div>
-    
 
-</div>
 
+<script src="js/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        var searchQueryInput = $('#searchQuery');
-        var searchResultsContainer = $('#searchResults');
-
-        searchQueryInput.on('input', function() {
-            var searchQuery = $(this).val();
-            if (searchQuery.length > 0) {
-                // Send AJAX request to search for users
-                $.ajax({
-                    url: 'search_user_ajax.php',
-                    method: 'GET',
-                    data: { searchQuery: searchQuery },
-                    dataType: 'json',
-                    success: function(response) {
-                        // Clear previous search results
-                        searchResultsContainer.empty();
-
-                        // Display search results using Bootstrap dropdown
-                        if (response.length > 0) {
-                            response.forEach(function(user) {
-                                var dropdownItem = $('<a class="dropdown-item"></a>')
-                                .attr('href', 'user.php?user_id=' + user.user_id) // Set user_id in the URL
-                                .text(user.username + ' - ' + user.email);
-                                console.log(user);
-                                searchResultsContainer.append(dropdownItem);
-                            });
-                        } else {
-                            var dropdownItem = $('<a class="dropdown-item disabled"></a>').text('No users found');
-                            searchResultsContainer.append(dropdownItem);
-                        }
-
-                        // Show the dropdown and apply custom styles
-                        searchResultsContainer.addClass('show custom-dropdown-menu');
-                    },
-                });
-            } else {
-                // Hide the dropdown if search query is empty
-                searchResultsContainer.removeClass('show custom-dropdown-menu');
-            }
-        });
-    });
-</script>
-
 </body>
 </html>

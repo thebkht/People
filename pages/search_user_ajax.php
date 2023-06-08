@@ -14,9 +14,9 @@ if (isset($_GET["searchQuery"])) {
     $searchQuery = $_GET["searchQuery"];
 
     // Prepare the SQL statement to search for users
-    $stmt = $conn->prepare("SELECT user_id, username, email FROM users WHERE username LIKE ? OR email LIKE ?");
+    $stmt = $conn->prepare("SELECT user_id, name, username, avatar, verified FROM users WHERE username LIKE ?");
     $searchTerm = "%$searchQuery%";
-    $stmt->bind_param("ss", $searchTerm, $searchTerm);
+    $stmt->bind_param("s", $searchTerm);
     $stmt->execute();
     $result = $stmt->get_result();
     $users = $result->fetch_all(MYSQLI_ASSOC);
