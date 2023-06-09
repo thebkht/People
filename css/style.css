@@ -691,3 +691,8 @@ input, textarea{
 .popular-profiles{
     width: 50%;
 }
+
+.btn-light{
+    background-color: #f8f9fa;
+    
+}
