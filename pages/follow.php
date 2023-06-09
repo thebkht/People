@@ -1,7 +1,41 @@
 <?php
 require_once "db_connection.php";
 
-if (isset($_POST['follow_user'])) {
+session_start();
+// Perform the follow action
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $followerId = $_SESSION["user_id"];
+    $followedId = $_POST["user_id"];
+
+    // Check if the user is already following the profile user
+    $stmt = $conn->prepare("SELECT * FROM user_followers WHERE follower_id = ? AND followed_id = ?");
+    $stmt->bind_param("ii", $followerId, $followedId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        // The user is already following, so unfollow
+        $stmt = $conn->prepare("DELETE FROM user_followers WHERE follower_id = ? AND followed_id = ?");
+        $stmt->bind_param("ii", $followerId, $followedId);
+        $stmt->execute();
+        $isFollowing = false;
+    } else {
+        // The user is not following, so follow
+        $stmt = $conn->prepare("INSERT INTO user_followers (follower_id, followed_id) VALUES (?, ?)");
+        $stmt->bind_param("ii", $followerId, $followedId);
+        $stmt->execute();
+        $isFollowing = true;
+    }
+
+    $stmt->close();
+
+    // Redirect back to the page after following the user
+    header("Location: ".$_SERVER['HTTP_REFERER']);
+    exit();
+}
+
+
+/* if (isset($_POST['follow_user'])) {
     $userIdToFollow = $_POST['follow_user'];
 
     // Check if the user ID and session user ID are not null
@@ -39,4 +73,4 @@ if (isset($_POST['follow_user'])) {
     header("Location: index.php");
     exit();
 }
-?>
+ */?>

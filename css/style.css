@@ -261,8 +261,64 @@ h1, h2, h3, h4, h5, h6{
 .dropdown-menu .dropdown-item {
     width: auto !important;
 }
-.list-group-item:last-child a{
+.list-group{
+    border-radius: 25px;
+}
+
+.list-group-item{
+    padding: 15px 25px;
+    font-weight: 800;
+    font-size: 16px;
+    border: 2px solid #EEEEEE;
+    background-color: #fff;
+}
+
+.list-group-item a{
     color: #000;
+}
+.list-group-link{
+    display: flex;
+}
+.list-group-img{
+    margin-right: 14px;
+    background-color: #f5f5fa;
+    height: 48.5px;
+    width: 48.5px;
+    border-radius: 50%;
+}
+.list-group-img img{
+    height: 48.5px; 
+    border-radius: 50%;
+}
+.list-group-link p{
+    margin: 0;
+}
+/* .list-group-item:last-child{
+    background-color: #f5f5fa;
+    text-align: center !important;
+} */
+/* .list-group-item:last-child a{
+    color: #8083A3;
+} */
+.list-group-item span{
+    color: #8083A3;
+    font-weight: 500;
+    font-size: 15px;
+}
+.follow-btn,
+.following-btn{
+    font-size: 14px;
+    height: 100%;
+    font-weight: 500;
+    border-radius: 24px;
+}
+
+.follow-btn{
+    padding: 11px 14px;
+}
+
+.following-btn{
+    padding: 11px 15px;
 }
 
 
@@ -481,6 +537,7 @@ h1, h2, h3, h4, h5, h6{
 
 .search-input input:focus{
     border: none;
+    box-shadow: none;
 }
 
 .search-input:focus{
@@ -519,6 +576,7 @@ h1, h2, h3, h4, h5, h6{
 .signup-form input:focus{
     background-color: #fff;
     border: none;
+    box-shadow: none;
 }
 
 .password-toggle{

@@ -48,7 +48,7 @@ if ($count > 0) {
     $result = $stmt->get_result();
     $articles = $result->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
-} else {
+}
     $stmt = $conn->prepare("SELECT users.*, COUNT(user_followers.follower_id) AS follower_count 
                             FROM users 
                             LEFT JOIN user_followers ON users.user_id = user_followers.followed_id
@@ -59,7 +59,6 @@ if ($count > 0) {
     $result = $stmt->get_result();
     $topUsers = $result->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
-}
 
 // Check if the search query is provided in the GET request
 if (isset($_GET["searchQuery"])) {
@@ -205,9 +204,19 @@ if (empty($articles)){
         <ul class="list-group mb-4">
                 <li class="list-group-item">Popular profiles</li>
                 <?php foreach ($topUsers as $u): ?>
+                    <?php
+                // Check if the user is already following the profile user
+                $stmt = $conn->prepare("SELECT * FROM user_followers WHERE follower_id = ? AND followed_id = ?");
+                $stmt->bind_param("ii", $_SESSION['user_id'], $u['user_id']);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $isFollowing = $result->num_rows > 0;
+                $stmt->close();
+                ?>
                     <?php if ($u['user_id'] !== $userId): ?>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <a href="user.php?user_id=<?php echo $u['user_id']; ?>" class="list-group-link">
+                        <li class="list-group-item">
+                            <a href="user.php?user_id=<?php echo $u['user_id']; ?>" class="list-group-link d-flex justify-content-between align-items-center">
+                                <div class="d-flex">
                                 <div class="list-group-img">
                                     <img src="../img/avatars/<?php echo $u['avatar']; ?>" alt="<?php echo $u['name']; ?>'s profile photo">
                                 </div>
@@ -217,8 +226,17 @@ if (empty($articles)){
                                         <i class="fa-solid fa-badge-check text-primary"></i>
                                     <?php endif; ?>
                                     <br>
-                                    <span><?php echo $u['username']; ?></span>
+                                    <span>@<?php echo $u['username']; ?></span>
                                 </p>
+                                </div>
+                                <form action="follow.php" method="POST">
+                    <input type="hidden" name="user_id" value="<?php echo $u['user_id']; ?>">
+                    <?php if ($isFollowing): ?>
+                        <button type="submit" class="following-btn btn btn-outline-success w-100 disabled"><i class="fa-regular fa-check"></i></button>
+                    <?php else: ?>
+                        <button type="submit" class="follow-btn btn btn-outline-success w-100"><i class="fa-regular fa-plus me-2"></i>Follow</button>
+                    <?php endif; ?>
+                </form>
                             </a>
                         </li>
                     <?php endif; ?>

@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_profile"])) {
         // Move the uploaded file to the target path
         if (move_uploaded_file($_FILES["avatar"]["tmp_name"], $targetPath)) {
             // Delete the previous avatar file if it exists
-            if ($current_avatar != "") {
+            if ($current_avatar != "" && $current_avatar != "user_318-563642.jpg") {
                 unlink($uploadDir . $current_avatar);
             }
 
