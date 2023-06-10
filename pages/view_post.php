@@ -86,6 +86,13 @@ if (isset($_GET["post_id"])) {
             $stmt->close();
         }
 
+        $stmt = $conn->prepare("SELECT * FROM articles WHERE user_id LIKE ? AND id != ? ORDER BY created_at DESC LIMIT 3");
+            $stmt->bind_param("si", $post['user_id'], $post_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $moreArticles = $result->fetch_all(MYSQLI_ASSOC);
+            $stmt->close();
+
         // Display the current post
         // ...
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -162,15 +169,15 @@ if (isset($_GET["post_id"])) {
             <a href="user.php?user_id=<?php echo $post['user_id']; ?>">
             <?php
             if (isset($post['user_id'])) {
-                $stmt = $conn->prepare("SELECT username FROM users WHERE user_id = ?");
+                $stmt = $conn->prepare("SELECT name FROM users WHERE user_id = ?");
                 $stmt->bind_param("i", $post['user_id']);
                 $stmt->execute();
                 $result = $stmt->get_result();
                 $user = $result->fetch_assoc();
                 $stmt->close();
 
-                if ($user && isset($user['username'])) {
-                    echo $user['username'];
+                if ($user && isset($user['name'])) {
+                    echo $user['name'];
                 }
             }
             ?>
@@ -242,34 +249,61 @@ if (isset($_GET["post_id"])) {
         <!-- Comment form -->
         <?php if (isset($_SESSION["user_id"])): ?>
             <h3>Add a Comment</h3>
-            <form action="<?php echo $_SERVER["PHP_SELF"] . "?post_id=" . $_GET["post_id"]; ?>" method="POST">
+            <form action="<?php echo $_SERVER["PHP_SELF"] . "?post_id=" . $_GET["post_id"]; ?>" method="POST" class="mb-4">
                 <div class="mb-3">
                     <textarea class="form-control" name="comment" placeholder="Your comment" required></textarea>
                 </div>
                 <button type="submit" class="btn btn-success">Submit Comment</button>
             </form>
         <?php else: ?>
-            <p>Please <a href="login.php">log in</a> to add a comment.</p>
+            <p class="mb-4">Please <a href="login.php">log in</a> to add a comment.</p>
         <?php endif; ?>
 
-        <!-- <?php
+        <section>
+        <?php
             
             if (!empty($relatedArticles)) {
                 $displayed_articles = [];
-                echo "<h2>Related Articles</h2>";
-                echo "<ul class='list-group mb-4'>";
+                echo "<h3>Related Articles</h3>";
+                echo "<ul class='list-group related-articles mb-4'>";
+                
                 foreach ($relatedArticles as $relatedArticle) {
-                    
-                    if (!in_array($relatedArticle['post_id'], $displayed_articles)){
+                    if (!empty($relatedArticle['id']) && !in_array($relatedArticle['id'], $displayed_articles)){
                         echo "<li class='list-group-item'>";
-                    echo "<a href='view_post.php?post_id=". $relatedArticle['post_id'] . "'>" . $relatedArticle['title'] . "</a>";
-                    echo "</li>";
-                    $displayed_articles[] = $related_article['post_id'];
+                        echo "<a href='view_post.php?post_id=". $relatedArticle['id'] . "'>" . $relatedArticle['title'] . "</a>";
+                        echo "</li>";
+                        $displayed_articles[] = $relatedArticle['id'];
                     }    
                 }
+                
                 echo "</ul>";
             }
-        ?> -->
+            
+        ?>
+        </section>
+        <section>
+        <?php
+            
+            if (isset($moreArticles)) {
+                $displayed_articles = [];
+                echo "<h3>More from " . $user['name'] . "</h3>";
+                echo "<ul class='list-group related-articles mb-4'>";
+                
+                foreach ($moreArticles as $moreArticle) {
+                    if (!empty($moreArticle['id']) && !in_array($moreArticle['id'], $displayed_articles)){
+                        echo "<li class='list-group-item'>";
+                        echo "<a href='view_post.php?post_id=". $moreArticle['id'] . "'>" . $moreArticle['title'] . "</a>";
+                        echo "</li>";
+                        $displayed_articles[] = $moreArticle['id'];
+                    }    
+                }
+                
+                echo "</ul>";
+            }
+            
+        ?>
+        </section>
+
     </div>
 
 

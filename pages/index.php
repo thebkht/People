@@ -174,7 +174,7 @@ if (empty($articles)){
                                         <i class="fa-solid fa-badge-check text-primary"></i>
                                     <?php endif; ?>
                                     <br>
-                                    <span><?php echo $publisher['username']; ?></span>
+                                    <span>@<?php echo $publisher['username']; ?></span>
                                 </p>
             </div>
             </div> 
