@@ -22,9 +22,9 @@
             header("Location: login.php");
             exit();
         } else {
-            $error = "Username is required.";
+            echo "Username is required.";
         }
     } else {
-        $error = "Passwords do not match.";
+        echo "Passwords do not match.";
     }
 ?>

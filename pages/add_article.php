@@ -14,6 +14,7 @@
     <link rel="icon" href="../img/favicon_48x48.png" sizes="48x48">
     <link rel="icon" href="../img/favicon_96x96.png" sizes="96x96">
     <link rel="icon" href="../img/favicon_144x144.png" sizes="144x144">
+    <script src="../js/"></script>
 </head>
 <body>
 <?php
@@ -50,10 +51,10 @@ $userId = $_SESSION["user_id"];
 
 <nav class="navbar navbar-expand-lg mb-4">
     <div class="container">
-        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-            <ul class="navbar-nav align-items-center ">
+        <div class="navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav align-items-center justify-content-between">
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center" href="user.php?user_id=<?php echo $_SESSION['user_id']; ?>">
+                    <a class="nav-link ms-0 d-flex align-items-center" href="user.php?user_id=<?php echo $_SESSION['user_id']; ?>">
                         <?php
                         // Fetch the user's avatar path from the database
                         // Replace 'your_user_id' with the actual user ID of the logged-in user
@@ -76,8 +77,9 @@ $userId = $_SESSION["user_id"];
                         ?>
                     </a>
                 </li>
+                <button type="submit" form="createPostForm" class="btn btn-success rounded-circle" style="padding: 4px 10px;font-size: 15px;height: 32px;width: 32px;"><i class="fa-regular fa-up-long"></i></button>
             </ul>
-            <button type="submit" form="createPostForm" class="btn btn-success rounded-circle" style="padding: 4px 10px;font-size: 15px;height: 32px;width: 32px;"><i class="fa-regular fa-up-long"></i></button>
+            
         </div>
     </div>
 </nav>

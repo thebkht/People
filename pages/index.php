@@ -93,7 +93,7 @@ if (isset($_GET["searchQuery"])) {
 }
 
 if (empty($articles)){
-    $message = "There either has been no new posts, or you don't follow anyone.";
+    $message = "There either has been no new articles, or you don't follow anyone.";
 }
 ?>
 
@@ -101,7 +101,8 @@ if (empty($articles)){
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Readit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>people</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -113,11 +114,19 @@ if (empty($articles)){
     <link rel="icon" href="../img/favicon_48x48.png" sizes="48x48">
     <link rel="icon" href="../img/favicon_96x96.png" sizes="96x96">
     <link rel="icon" href="../img/favicon_144x144.png" sizes="144x144">
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/load.js"></script>
 </head>
 <body>
-<?php include "navbar.php"; ?>
+<div id="load">
+  <div class="loading"><img src="../img/icon.png" height="50" id="load-img" alt=""></div>
+</div>
 
-<div class="container">
+<div id="page" class="page">
+    <div class="app">
+    <?php include "navbar.php"; ?>
+
+<div class="container mb-5">
     <div class="row flex-column align-items-center">
     <?php
         // Fetch the user's avatar path from the database
@@ -136,7 +145,7 @@ if (empty($articles)){
             <div class="feed_empty-text"><?php echo $message; ?></div>
         <?php endif; ?>
 
-        <div class="mb-5 mt-4 m-auto col-5 search-dropdown">
+        <div class="mb-5 mt-4 m-auto col-lg-5 col-md-10 search-dropdown">
             <div class="search-input rounded-pill d-flex align-items-center">
             <i class="fa-regular fa-magnifying-glass"></i>
             <input type="text" class="form-control rounded-pill" id="searchQuery" name="searchQuery" placeholder="Search" autocomplete="off">
@@ -145,14 +154,14 @@ if (empty($articles)){
             </div>
         </div>
 
-        
-    <?php if (!empty($articles)): ?>
-        <div class="articles w-100">
-        <?php foreach ($articles as $article): ?>
-            <div class="col-4 article me-1 mb-3">
-            <a href="view_post.php?post_id=<?php echo $article['id']; ?>">
-            <div class="card h-100 mb-3">
-                <div class="card-header d-flex justify-content-between">
+        <?php if (!empty($articles)): ?>
+    <div class="articles">
+    <?php foreach ($articles as $article): ?>
+        <?php if($article['user_id'] !== $_SESSION['user_id']): ?>
+            <div class="col-lg-4 col-md-6 col-sm-12 col-xl-4 article mb-3">
+                <a href="view_post.php?post_id=<?php echo $article['id']; ?>">
+                    <div class="card h-100 mb-3">
+                    <div class="card-header d-flex justify-content-between">
                 <?php
             // Retrieve the publisher's information
             $publisherId = $article['user_id'];
@@ -193,14 +202,14 @@ if (empty($articles)){
                 <p class="card-text d-inline mb-0 text-muted me-3"><i class="far fa-eye me-1"></i> <?php echo $article['views']; ?></p>
                 <p class="card-text d-inline mb-0 text-muted"><i class="far fa-comments me-1"></i> <?php echo $article['comments']; ?></p>
                 </div>
+                    </div>
+                </a>
             </div>
-            </a>
-            </div>
-            
-        <?php endforeach; ?>
-        </div>
-    <?php else: ?>
-        <div class="popular-profiles">
+        <?php endif; ?>
+    <?php endforeach; ?>
+    </div>
+<?php else: ?>
+    <div class="popular-profiles">
         <ul class="list-group mb-4">
                 <li class="list-group-item">Popular profiles</li>
                 <?php foreach ($topUsers as $u): ?>
@@ -244,7 +253,10 @@ if (empty($articles)){
 
         </ul>
         </div>
-    <?php endif; ?>
+<?php endif; ?>
+        
+    </div>
+</div>
     </div>
 </div>
 

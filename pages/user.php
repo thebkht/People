@@ -128,13 +128,24 @@ if (isset($_GET["searchQuery"])) {
     <link rel="icon" href="../img/favicon_48x48.png" sizes="48x48">
     <link rel="icon" href="../img/favicon_96x96.png" sizes="96x96">
     <link rel="icon" href="../img/favicon_144x144.png" sizes="144x144">
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/load.js"></script>
 </head>
 <body style="background-color: #fff;">
+<div id="load">
+  <div class="loading"><img src="../img/icon.png" height="50" id="load-img" alt=""></div>
+</div>
+
+<div id="page" class="page">
+    <div class="app">
+    </div>
+</div>
 <?php include "navbar.php"; ?>
 
 <div class="container">
     <div class="row justify-content-between mb-5">
-        <div class="col-3">
+        <div class="col-lg-3">
+            <div class="user">
             <div class="profile-photo mb-3">
                 <img src="../img/avatars/<?php echo $member['avatar']; ?>" class="h-100 rounded-circle" alt="<?php echo $member['name']; ?>'s profile photo">
             </div>
@@ -144,9 +155,13 @@ if (isset($_GET["searchQuery"])) {
                     <i class="fa-solid fa-badge-check text-primary ms-1"></i>
                 <?php endif; ?>
             </h5>
-            <h6 class="mb-3">@<?php echo $member['username']; ?></h6>
+            <h6 class="mb-3" style="color: #949494">@<?php echo $member['username']; ?></h6>
             <p>Email: <?php echo $member['email']; ?></p>
-            <p><?php echo $followerCount; ?> Followers | <?php echo $postCount; ?> articles</p>
+            <div class="userInfo-buttons mb-3">
+            <button class="btn me-3" data-bs-toggle="modal" data-bs-target="#followersModal" data-userid="<?php echo $member['user_id']; ?>"><b><?php echo $followerCount; ?></b> Followers</button>
+
+                <button class="btn"><b><?php echo $postCount; ?></b> Articles</button>
+            </div>
 
             <!-- Follow Button -->
             <?php if ($_SESSION['user_id'] !== $member['user_id']): ?>
@@ -163,16 +178,61 @@ if (isset($_GET["searchQuery"])) {
                 <form action="user.php?user_id=<?php echo $followedId; ?>" method="POST">
                     <input type="hidden" name="user_id" value="<?php echo $followedId; ?>">
                     <?php if ($isFollowing): ?>
-                        <button type="submit" class="btn btn-outline-success w-100">Following</button>
+                        <button type="submit" class="btn btn-outline-success w-100 mb-5">Following</button>
                     <?php else: ?>
-                        <button type="submit" class="btn btn-success w-100">Follow</button>
+                        <button type="submit" class="btn btn-success w-100 mb-5">Follow</button>
                     <?php endif; ?>
                 </form>
                 <?php else: ?>
-                <a href="edit_profile.php" class="btn btn-outline-success w-100">Edit Profile</a>
+                <a href="edit_profile.php" class="btn btn-outline-success w-100 mb-5">Edit Profile</a>
+            <?php endif; ?>
+            </div>
+
+            <div class="user-scroll">
+            <div class="user-scroll_header">
+            <div class="profile-photo mb-3 me-2">
+                <img src="../img/avatars/<?php echo $member['avatar']; ?>" class="h-100 rounded-circle" alt="<?php echo $member['name']; ?>'s profile photo">
+            </div>
+            <div class="user-scroll_user">
+            <span class="user-scroll_name">
+                <?php echo $member['name']; ?>
+                <?php if ($member['verified']): ?>
+                    <i class="fa-solid fa-badge-check text-primary ms-1"></i>
+                <?php endif; ?>
+            </span>
+            <span class="mb-3 user-scroll_username">@<?php echo $member['username']; ?></span>
+            </div>
+            </div>
+
+            <!-- Follow Button -->
+            <?php if ($_SESSION['user_id'] !== $member['user_id']): ?>
+                <?php
+                // Check if the user is already following the profile user
+                $stmt = $conn->prepare("SELECT * FROM user_followers WHERE follower_id = ? AND followed_id = ?");
+                $stmt->bind_param("ii", $followerId, $followedId);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $isFollowing = $result->num_rows > 0;
+                $stmt->close();
+                ?>
+
+                <form action="user.php?user_id=<?php echo $followedId; ?>" method="POST">
+                    <input type="hidden" name="user_id" value="<?php echo $followedId; ?>">
+                    <?php if ($isFollowing): ?>
+                        <button type="submit" class="btn btn-outline-success">Following</button>
+                    <?php else: ?>
+                        <button type="submit" class="btn btn-success">Follow</button>
+                    <?php endif; ?>
+                </form>
+                <?php else: ?>
+                <a href="edit_profile.php" class="btn btn-outline-success">Edit Profile</a>
             <?php endif; ?>
         </div>
-        <div class="col-8">
+        </div>
+        
+        
+
+        <div class="col-lg-8">
             <h2>Articles</h2>
             <div class="user-articles">
             <div class="mb-5 mt-4 w-100 m-auto col-6 search-dropdown">
@@ -198,7 +258,7 @@ if (isset($_GET["searchQuery"])) {
                             </div>
                         <?php endif; ?>
                         <div class="stats d-flex align-items-center">
-                        <p class="card-text d-inline mb-0 me-3"><?php echo date("F j, Y", strtotime($article["created_at"])); ?></p>
+                        <p class="card-text d-inline mb-0 me-3"><?php echo date("F j, Y, H:i", strtotime($article["created_at"])); ?></p>
                             <p class="card-text d-inline mb-0 text-muted me-3"><i class="far fa-eye me-1"></i> <?php echo $article['views']; ?></p>
                 <p class="card-text d-inline mb-0 text-muted"><i class="far fa-comments me-1"></i> <?php echo $article['comments']; ?></p>
                             </div>
@@ -211,6 +271,20 @@ if (isset($_GET["searchQuery"])) {
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="followersModal" tabindex="-1" aria-labelledby="followersModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="followersModalLabel">Followers</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="followersList"></div> <!-- Empty div to display followers -->
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="../js/script.js"></script>
@@ -260,6 +334,61 @@ if (isset($_GET["searchQuery"])) {
         });
     });
 </script>
+
+<script>
+  var modalBody = document.querySelector('#followersModal .modal-body');
+
+  function updateFollowersModal(userId) {
+    modalBody.innerHTML = '<div class="d-flex justify-content-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+
+    // Send AJAX request to get followers data
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        var followers = JSON.parse(xhr.responseText);
+        modalBody.innerHTML = '';
+
+        if (followers.length > 0) {
+          var followersList = document.createElement('ul');
+          followersList.classList.add('list-group');
+          followersList.classList.add('followers-list');
+
+          followers.forEach(function(follower) {
+            console.log(follower);
+            // Check if the user is verified
+            var verificationBadge = follower['verified'] ? '<i class="fa-solid fa-badge-check text-primary ms-1"></i>' : '';
+
+            var listItem = document.createElement('li');
+            listItem.classList.add('list-group-item');
+            var listContent = document.createElement('a');
+            listContent.classList.add('list-item');
+            listContent.setAttribute('href', 'user.php?user_id=' + follower['user_id']);
+            listContent.innerHTML = '<div class="d-flex"><div class="publisher-photo me-2"><img src="../img/avatars/' + follower['avatar'] + '" class="h-100 rounded-circle" alt=""></div><div class="publisher"><p class="mb-0">' + follower['name'] + ''  + verificationBadge + '<br><span>@' + follower['username'] + '</span></p></div></div> ';
+            listItem.appendChild(listContent);
+            followersList.appendChild(listItem);
+          });
+
+          modalBody.appendChild(followersList);
+        } else {
+          modalBody.textContent = 'No followers found.';
+        }
+      } else if (xhr.readyState === 4) {
+        modalBody.textContent = 'Failed to load followers.';
+      }
+    };
+
+    xhr.open('GET', 'get_followers.php?user_id=' + userId, true);
+    xhr.send();
+  }
+
+  document.querySelector('#followersModal').addEventListener('show.bs.modal', function(event) {
+    var button = event.relatedTarget;
+    var userId = button.getAttribute('data-userid');
+    updateFollowersModal(userId);
+  });
+</script>
+
+
 
 </body>
 </html>

@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In - Readit</title>
+    <title>Sign In - people</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div class="content d-flex p-4">
             <div class="container-fluid">
                 <div class="row h-100">
-                    <div class="col-5 d-flex flex-column justify-content-between background">
+                    <div class="col-lg-5 d-flex flex-column justify-content-between background">
                         <div class="d-flex justify-content-start">
                             <div class="image overflow-hidden d-flex justify-content-center">
                                 <img src="../img/header-img.png" style="width: 110%;" class="mb-4" alt="">
@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             </div>
                         </div>
                     </div>
-                    <div class="signup-form col-4 d-flex flex-column justify-content-center align-items-center">
+                    <div class="signup-form col-lg-4 d-flex flex-column justify-content-center align-items-center">
                         <div class="logo">
                             <img src="../img/icon.png" class="m-3 mb-2" height="60px" alt="">
                         </div>

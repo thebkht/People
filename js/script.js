@@ -1,3 +1,20 @@
+(function ($) {
+  "use strict"
+
+  /* 2. sticky And Scroll UP */
+  $(window).on('scroll', function () {
+      var scroll = $(window).scrollTop();
+      if (scroll > 500) {
+        $(".user-scroll").addClass("active");
+        console.log(scroll);
+      } else {
+        $(".user-scroll").removeClass("active");
+        console.log("class");
+      }
+  });
+
+})(jQuery);
+
 $(document).ready(function() {
     // Get the current URL
     var currentUrl = window.location.href;

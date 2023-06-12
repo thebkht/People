@@ -156,34 +156,94 @@ if (isset($_GET["post_id"])) {
     <link rel="icon" href="../img/favicon_48x48.png" sizes="48x48">
     <link rel="icon" href="../img/favicon_96x96.png" sizes="96x96">
     <link rel="icon" href="../img/favicon_144x144.png" sizes="144x144">
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/load.js"></script>
 </head>
 <body style="background-color: #fff;">
+<div id="load">
+  <div class="loading"><img src="../img/icon.png" height="50" id="load-img" alt=""></div>
+</div>
+
+<div id="page" class="page">
+    <div class="app">
+    </div>
+</div>
 <?php include "navbar.php"; ?>
 
     <div class="container mb-5">
-        <h1><?php echo $post["title"]; ?></h1>
-        <article class="mt-4 mb-4">
-        <?php echo $post["content"]; ?>
-        </article>
-        <p class="card-text fw-bold">Posted by 
-            <a href="user.php?user_id=<?php echo $post['user_id']; ?>">
-            <?php
+        <div class="row justify-content-center">
+            <div class="col-10">
+
+            <div class="publisher d-flex mb-5 justify-content-between">
+    <?php
             if (isset($post['user_id'])) {
-                $stmt = $conn->prepare("SELECT name FROM users WHERE user_id = ?");
+                $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
                 $stmt->bind_param("i", $post['user_id']);
                 $stmt->execute();
                 $result = $stmt->get_result();
-                $user = $result->fetch_assoc();
+                $publisher = $result->fetch_assoc();
                 $stmt->close();
 
-                if ($user && isset($user['name'])) {
-                    echo $user['name'];
-                }
+                // Check if the user is already following the publisher
+                $stmt = $conn->prepare("SELECT * FROM user_followers WHERE follower_id = ? AND followed_id = ?");
+                $stmt->bind_param("ii", $_SESSION['user_id'], $publisher['user_id']);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $isFollowing = $result->num_rows > 0;
+                $stmt->close();
             }
             ?>
+            <a class="publisher-data d-flex" href="user.php?user_id=<?php echo $publisher['user_id']; ?>">
+            <div class="publisher-photo me-2">
+            <img src="../img/avatars/<?php echo $publisher['avatar']; ?>" class="h-100 rounded-circle" alt="<?php echo $publisher['name']; ?>'s profile photo">
+            </div>
+            <p class="mb-0">
+                                    <?php echo $publisher['name']; ?>
+                                    <?php if($publisher['verified']): ?>
+                                        <i class="fa-solid fa-badge-check text-primary"></i>
+                                    <?php endif; ?>
+                                    <br>
+                                    <span>@<?php echo $publisher['username']; ?></span>
+                                </p>
             </a>
-        </p>
-    <p class="card-text d-inline"><small class="text-muted"><?php echo date("F j, Y", strtotime($post["created_at"])); ?></small></p>
+
+            <?php if($_SESSION['user_id'] !== $publisher['user_id']): ?>
+            <? if(isset($_SESSION['user_id'])): ?>
+                <form action="follow.php" method="POST">
+                    <input type="hidden" name="user_id" value="<?php echo $publisher['user_id']; ?>">
+                    <?php if ($isFollowing): ?>
+                        <button type="submit" class="btn btn-outline-success">Following</button>
+                    <?php else: ?>
+                        <button type="submit" class="btn btn-success">Follow</button>
+                    <?php endif; ?>
+                </form>
+            <!-- <div class="publisher-actions ms-auto">
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal">
+            <i class="fa-regular fa-flag"></i>
+            </button>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#shareModal">
+            <i class="fa-regular fa-share"></i>
+            </button>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#saveModal">
+            <i class="fa-regular fa-bookmark"></i>
+            </button>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#moreModal">
+            <i class="fa-regular fa-ellipsis-h"></i>
+            </button>
+            </div> -->
+            <? endif; ?>
+            <?php endif; ?>
+
+
+            </div>
+
+            <h1><?php echo $post["title"]; ?></h1>
+        <article class="mt-4 mb-4">
+        <?php echo $post["content"]; ?>
+        </article>
+        <hr>
+        <p class="article-info d-inline"><small class="text-muted"><?php echo date("F j, Y, H:i", strtotime($post["created_at"])); ?></small></p>
+        <p class="article-info d-inline"><small class="text-muted"><?php echo $post["views"]; ?> views</small></p>
         <div class="mt-4 mb-4">
         <h5>Topics:</h5>
         <?php
@@ -196,13 +256,13 @@ if (isset($_GET["post_id"])) {
         }
         ?>
     </div>
+            </div>
+            <hr>
 
-        <hr>
-
-
+            <div class="comments col-10 mt-4 mb-4">
                 <!-- Display existing comments -->
-                <div class="comments">
                 <?php if (!empty($comments)): ?>
+                    <h3>Commnets</h3>
             <?php foreach ($comments as $comment): ?>
                 <?php
             if (isset($post['user_id'])) {
@@ -229,7 +289,7 @@ if (isset($_GET["post_id"])) {
                                         <i class="fa-solid fa-badge-check text-primary ms-2"></i>
                                     <?php endif; ?>
                                 </p>
-                                <span class="publisher-username"><?php echo date("F j, Y", strtotime($comment["created_at"])); ?></span> 
+                                <span class="publisher-username"><?php echo date("F j, Y, H:i", strtotime($comment["created_at"])); ?></span> 
                             </div>
                         </a>
                             </div>
@@ -239,16 +299,14 @@ if (isset($_GET["post_id"])) {
                     
                 </div>
             <?php endforeach; ?>
-        <?php else: ?>
-            <p>No comments found.</p>
+            <hr>
         <?php endif; ?>
-                </div>
 
-        <hr>
+        
 
         <!-- Comment form -->
         <?php if (isset($_SESSION["user_id"])): ?>
-            <h3>Add a Comment</h3>
+            <h3>Leave a Comment</h3>
             <form action="<?php echo $_SERVER["PHP_SELF"] . "?post_id=" . $_GET["post_id"]; ?>" method="POST" class="mb-4">
                 <div class="mb-3">
                     <textarea class="form-control" name="comment" placeholder="Your comment" required></textarea>
@@ -259,7 +317,11 @@ if (isset($_GET["post_id"])) {
             <p class="mb-4">Please <a href="login.php">log in</a> to add a comment.</p>
         <?php endif; ?>
 
-        <section>
+
+            </div>
+
+            <div class="col-10">
+            <section>
         <?php
             
             if (!empty($relatedArticles)) {
@@ -303,7 +365,8 @@ if (isset($_GET["post_id"])) {
             
         ?>
         </section>
-
+            </div>
+        </div>
     </div>
 
 

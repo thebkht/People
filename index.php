@@ -34,12 +34,9 @@
 <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
   <path d="m30,0h0C13.44,0,0,13.44,0,30h0c0,16.56,13.44,30,30,30h0c16.56,0,30-13.44,30-30h0C60,13.44,46.58,0,30,0Zm0,17.19c2.23,0,4.04,1.81,4.04,4.04s-1.81,4.04-4.04,4.04-4.04-1.81-4.04-4.04,1.81-4.04,4.04-4.04Zm16.14,12.51c-3.23,1.05-6.6,1.63-10.07,1.91v6.11c0,2.81-2.28,5.09-5.09,5.09h-1.93c-2.81,0-5.09-2.28-5.09-5.09v-6.11c-3.47-.28-6.86-.86-10.07-1.91-.89-.3-1.51-1.12-1.51-2.07,0-1.46,1.39-2.49,2.79-2.09,4.68,1.33,9.68,1.75,14.84,1.75s10.16-.42,14.84-1.75c1.4-.4,2.79.65,2.79,2.09-.02.93-.61,1.77-1.51,2.07Z"/>
 </svg>
-                Readit.
+                people
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <div class="navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav align-items-center">
                 <!-- <form action="search.php" method="GET" class="search-form form-group">
                     <input type="text" name="query" class="form-control" placeholder="Search articles...">

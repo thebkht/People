@@ -133,7 +133,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["change_password"])) {
             <?php endif; ?>
     <div class="row justify-content-between mb-5">
 
-<div class="col-5">
+<div class="col-lg-5 mb-5">
     <!-- Profile update form -->
 <h3>Update Profile Information</h3>
 
@@ -141,7 +141,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["change_password"])) {
 <div class="mb-3">
                 <label for="avatar" class="form-label d-block">Avatar</label>
                 <input type="file" class="form-control" id="avatar" name="avatar" style="display: none;" onchange="checkImageResolution(this);">
-                <img id="current-avatar" src="../img/avatars/<?php echo $current_avatar; ?>" class="rounded-circle" alt="Current Avatar" width="150" style="cursor: pointer;" onclick="document.getElementById('avatar').click();">
+                <div style="cursor: pointer;" onclick="document.getElementById('avatar').click();">
+                <img id="current-avatar" src="../img/avatars/<?php echo $user['avatar']; ?>" class="rounded-circle" alt="Current Avatar" width="150">
+                </div>
             </div>
 
     <div class="mb-3">
@@ -160,7 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["change_password"])) {
 </form>
 </div>
 
-<div class="col-5">
+<div class="col-lg-5">
     <!-- Password change form -->
 <h3>Change Password</h3>
 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST">

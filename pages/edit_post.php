@@ -73,10 +73,10 @@ if (isset($_GET["post_id"])) {
 <body>
 <nav class="navbar navbar-expand-lg mb-4">
     <div class="container">
-        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-            <ul class="navbar-nav align-items-center ">
+        <div class="navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav align-items-center justify-content-between">
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center" href="user.php?user_id=<?php echo $_SESSION['user_id']; ?>">
+                    <a class="nav-link ms-0 d-flex align-items-center" href="user.php?user_id=<?php echo $_SESSION['user_id']; ?>">
                         <?php
                         // Fetch the user's avatar path from the database
                         // Replace 'your_user_id' with the actual user ID of the logged-in user
@@ -99,11 +99,12 @@ if (isset($_GET["post_id"])) {
                         ?>
                     </a>
                 </li>
-            </ul>
-            <div class="buttons">
+                <div class="buttons">
             <a href="view_post.php?post_id=<?php echo $post_id; ?>" class="btn btn-outline-danger rounded-circle me-1" style="padding: 6px 13px; border-width: 2px"><i class="fa-regular fa-xmark"></i></a>
             <button type="submit" form="editPostForm" class="btn btn-success rounded-circle" style="padding: 6px 11px; border-width: 2px"><i class="fa-regular fa-check"></i></button>
             </div>
+            </ul>
+            
         </div>
     </div>
 </nav>

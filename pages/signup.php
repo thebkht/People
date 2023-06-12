@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - Readit</title>
+    <title>Sign Up - people</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,12 +55,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <body>
         <div class="content d-flex p-4">
             <div class="container-fluid">
-                <div class="row h-100">
-                    <div class="col-5 d-flex flex-column justify-content-between background">
+                <div class="row h-100 auth-page">
+                    <div class="col-lg-5 d-flex flex-column justify-content-between background">
                         <div class="d-flex justify-con../tent-start">
                             <div class="image overflow-hidden d-flex justify-content-center">
                                 <img src="../img/header-img.png" style="width: 110%;" class="mb-4" alt="">
-                            </div>../
+                            </div>
                         </div>
                         <div class="text justify-content-end">
                             <h1 class="title m-5">Stay updated on your network</h1>
@@ -70,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             </div>
                         </div>
                     </div>
-                    <div class="signup-form col-4 d-flex flex-column justify-content-center align-items-center">
+                    <div class="signup-form col-lg-4 d-flex flex-column justify-content-center align-items-center">
                         <div class="logo">
                             <img src="../img/icon.png" class="m-4 mt-0" height="60px" alt="">
                         </div>
@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
         </form>
     <?php } else { ?>
-        <form action="process_signup.php" method="POST" class="w-100 mt-3 signup-form">
+        <form action="process_signup.php" method="POST" class="w-100 mt-3 signup-form" id="signup-form">
         <div class="form-floating mb-3">
                 <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email" value="<?php echo $email; ?>" required readonly>
                 <label for="floatingInput" class="label">Email address</label>
