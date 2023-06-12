@@ -1,4 +1,4 @@
-# Readit.
+# People.
 
 This is a simple blogging web application where users can create, view, and manage their blog posts.
 
@@ -21,13 +21,13 @@ This is a simple blogging web application where users can create, view, and mana
 
 ## Getting Started
 
-1. Clone the repository: `git clone https://github.com/your-username/blogging-web-app.git\`
+1. Clone the repository: `git clone https://github.com/yusupovbg/People.git`
 
 
 2. Import the database:
 
    - Create a new MySQL database.
-   - Import the `database.sql` file located in the `database` folder to set up the necessary tables and data.
+   - Import the `database.sql` file located in the project root directory to set up the necessary tables and data.
 
 3. Configure the database connection:
 
