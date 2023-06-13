@@ -52,7 +52,7 @@ $userId = $_SESSION["user_id"];
 <nav class="navbar navbar-expand-lg mb-4">
     <div class="container">
         <div class="navbar-collapse justify-content-between" id="navbarNav">
-            <ul class="navbar-nav align-items-center justify-content-between">
+            <ul class="navbar-nav align-items-center justify-content-between" style="display: contents;">
                 <li class="nav-item">
                     <a class="nav-link ms-0 d-flex align-items-center" href="user.php?user_id=<?php echo $_SESSION['user_id']; ?>">
                         <?php
