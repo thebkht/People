@@ -122,7 +122,7 @@ if (isset($_GET["post_id"])) {
             <label for="content">Content</label>
         </div>
         <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="topics" name="topics" placeholder="Topics" value="<?php echo $post["topics"]; ?>" required>
+            <input type="text" class="form-control" id="topics" name="topics" placeholder="Topics" value="<?php echo $post["topics"]; ?>">
             <label for="topics">Topics</label>
         </div>
         <!-- <button type="submit" class="btn btn-success">Add Article</button> -->
