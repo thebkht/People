@@ -242,7 +242,7 @@ if (isset($_GET["post_id"])) {
         <?php echo $post["content"]; ?>
         </article>
         <hr>
-        <p class="article-info d-inline"><small class="text-muted"><?php echo date("F j, Y, H:i", strtotime($post["created_at"])); ?></small></p>
+        <p class="article-info d-inline"><small class="text-muted"><?php echo date("F j Y, H:i", strtotime($post["created_at"])); ?></small></p>
         <p class="article-info d-inline"><small class="text-muted"><?php echo $post["views"]; ?> views</small></p>
         <div class="mt-4 mb-4">
         <h5>Topics:</h5>
@@ -289,7 +289,7 @@ if (isset($_GET["post_id"])) {
                                         <i class="fa-solid fa-badge-check text-primary ms-2"></i>
                                     <?php endif; ?>
                                 </p>
-                                <span class="publisher-username"><?php echo date("F j, Y, H:i", strtotime($comment["created_at"])); ?></span> 
+                                <span class="publisher-username"><?php echo date("F j Y, H:i", strtotime($comment["created_at"])); ?></span> 
                             </div>
                         </a>
                             </div>
@@ -311,7 +311,7 @@ if (isset($_GET["post_id"])) {
                 <div class="mb-3">
                     <textarea class="form-control" name="comment" placeholder="Your comment" required></textarea>
                 </div>
-                <button type="submit" class="btn btn-success">Submit Comment</button>
+                <button type="submit" class="btn btn-success w-100">Submit Comment</button>
             </form>
         <?php else: ?>
             <p class="mb-4">Please <a href="login.php">log in</a> to add a comment.</p>

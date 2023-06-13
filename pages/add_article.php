@@ -92,7 +92,7 @@ $userId = $_SESSION["user_id"];
             <label for="title">Title</label>
         </div>
         <div class="form-floating mb-3">
-            <textarea class="form-control h-100" id="content" name="content" placeholder="Content" rows="18"></textarea>
+            <textarea class="form-control h-100" id="content" name="content" placeholder="Content" rows="18" maxlength="2000"></textarea>
             <label for="content">Content</label>
         </div>
         <div class="form-floating mb-3">

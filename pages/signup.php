@@ -4,11 +4,10 @@ require_once "db_connection.php";
 
 // Initialize variables
 $email = "";
-$error = "";
 $showForm = false;
 
 // Process the signup form submission
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['email'])) {
     $email = $_POST["email"];
 
     // Validate user input if needed
@@ -29,6 +28,35 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $showForm = true;
         // Proceed to the next step or redirect to another page
         // where you can collect new user details and save them to the database
+    }
+}
+
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['confirmedEmail'])) {
+    $username = $_POST["username"];
+    $name = $_POST["name"];
+    $email = $_POST["confirmedEmail"];
+    $password = $_POST["password"];
+    $confirmPassword = $_POST["confirm_password"];
+
+    if ($password === $confirmPassword) {
+        // Hash the password
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        if (!empty($username)) {
+            // Insert the new user into the database
+            $stmt = $conn->prepare("INSERT INTO users (name, username, email, password) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("ssss", $name, $username, $email, $hashedPassword);
+            $stmt->execute();
+            $stmt->close();
+
+            // Redirect the user to the login page or any other desired page
+            header("Location: login.php");
+            exit();
+        } else {
+            $error = "Username is required.";
+        }
+    } else {
+        $error = "Passwords do not match.";
     }
 }
 ?>
@@ -76,21 +104,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         </div>
                         <h2>Sign Up</h2>
                         <p class="mb-3 text">Take the next step and sign in to your account</p>
+                        <?php if (isset($error)): ?>
+                            <div class="alert alert-danger w-100 d-flex fade show justify-content-between" role="alert"><?php echo $error; ?><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+                        <?php endif; ?>
                         <?php if (!$showForm) { ?>
+
         <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST" class="w-100 mt-3 signup-form">
             <div class="form-floating mb-3">
                 <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email" required>
                 <label for="floatingInput" class="label">Email address</label>
             </div>
-            <div class="error"><?php echo $error; ?></div>
             <div class="col-auto">
                 <button type="submit" class="btn btn-success w-100 pt-3 pb-3">Check Email</button>
             </div>
         </form>
     <?php } else { ?>
-        <form action="process_signup.php" method="POST" class="w-100 mt-3 signup-form" id="signup-form">
+        <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST" class="w-100 mt-3 signup-form" id="signup-form">
         <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email" value="<?php echo $email; ?>" required readonly>
+                <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="confirmedEmail" value="<?php echo $email; ?>" required readonly>
                 <label for="floatingInput" class="label">Email address</label>
             </div>
             <div class="form-floating mb-3">
@@ -112,8 +143,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <div class="form-floating mb-4 d-flex password-input">
                                 <input type="password" class="form-control" id="ConfimPassword" placeholder="Password" name="confirm_password" required>
                                 <label for="ConfimPassword">Confirm password</label>
-                                <span class="password-toggle" onclick="togglePasswordVisibility('ConfimPassword', 'password-icon')">
-        <i class="far fa-eye" id="password-icon"></i>
+                                <span class="password-toggle" onclick="togglePasswordVisibility('ConfimPassword', 'password-icon2')">
+        <i class="far fa-eye" id="password-icon2"></i>
     </span>
                             </div>
             <div class="col-auto">

@@ -140,7 +140,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["change_password"])) {
         <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST" enctype="multipart/form-data">
 <div class="mb-3">
                 <label for="avatar" class="form-label d-block">Avatar</label>
-                <input type="file" class="form-control" id="avatar" name="avatar" style="display: none;" onchange="checkImageResolution(this);">
+                <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*" style="display: none;" onchange="validateImageResolution(this);">
                 <div style="cursor: pointer;" onclick="document.getElementById('avatar').click();">
                 <img id="current-avatar" src="../img/avatars/<?php echo $user['avatar']; ?>" class="rounded-circle" alt="Current Avatar" width="150">
                 </div>
@@ -195,29 +195,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["change_password"])) {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-    function checkImageResolution(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
+    // Function to validate the selected image resolution
+    function validateImageResolution(fileInput) {
+      if (fileInput.files && fileInput.files[0]) {
+        var img = new Image();
 
-            reader.onload = function (e) {
-                var image = new Image();
+        img.onload = function() {
+          var width = img.width;
+          var height = img.height;
 
-                image.onload = function () {
-                    var width = this.width;
-                    var height = this.height;
-
-                    console.log('got image');
-                    var preview = document.getElementById("current-avatar");
-                        preview.src = e.target.result;
-                };
-
-                image.src = e.target.result;
-            };
-
-            reader.readAsDataURL(input.files[0]);
-        }
+          if (width !== height) {
+            alert("Please choose an image with a 1:1 resolution.");
+            fileInput.value = ''; // Reset the file input value
+          } else{
+            var preview = document.getElementById("current-avatar");
+            preview.src = URL.createObjectURL(fileInput.files[0]);
+          }
+        };
+        img.src = URL.createObjectURL(fileInput.files[0]);
+      }
     }
-</script>
 </script>
 
 </body>

@@ -86,8 +86,23 @@ if (isset($_GET["searchQuery"])) {
     exit();
 }
 
-$message = (empty($articles)) ? "There either have been no new articles, or you don't follow anyone." : "Here are the latest articles from the people you follow.";
-?>
+if (empty($articles)) {
+    $message = "There either have been no new articles, or you don't follow anyone.";
+} else {
+    $message = "Here are the latest articles from the people you follow.";
+    
+    // Check the length of the articles array modulo 3
+    $articlesCount = count($articles);
+    $articlesModulo = $articlesCount % 3;
+
+    if ($articlesCount % 3 == 1 || $articlesCount % 3 == 2) {
+        // Display popular articles
+        $stmt = $conn->prepare("SELECT * FROM articles ORDER BY views DESC LIMIT 5");
+        $stmt->execute();
+        $popularArticles = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+    }
+}?>
 
 
 
@@ -147,60 +162,109 @@ $message = (empty($articles)) ? "There either have been no new articles, or you 
             <div class="dropdown-menu mt-3" id="searchResults" aria-labelledby="searchQuery">
             </div>
         </div>
-
         <?php if (!empty($articles)): ?>
     <div class="articles">
-    <?php foreach ($articles as $article): ?>
-        <?php if($article['user_id'] !== $_SESSION['user_id']): ?>
+        <?php
+        // Generate a random position to insert the popular articles
+        $randomPosition = mt_rand(0, count($articles));
+
+        // Loop counter
+        $counter = 0;
+
+        foreach ($articles as $article):
+            // Check if the current position matches the random position
+            if ($counter == $randomPosition):
+                // Display the popular articles
+                if (isset($popularArticles)):
+                    ?>
+                    <div class="popular-articles col-lg-4 col-md-6 col-sm-12 col-xl-4 mb-3">
+                        <ul class="list-group h-100">
+                            <li class="list-group-item text-center text-secondary">Popular articles</li>
+                            <?php foreach ($popularArticles as $popularArticle): ?>
+                                <li class="list-group-item">
+                                    <a href="view_post.php?post_id=<?php echo $popularArticle['id']; ?>" class="list-group-link d-flex justify-content-between align-items-center">
+                                        <?php echo $popularArticle["title"]; ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php
+                endif;
+            endif;
+            ?>
             <div class="col-lg-4 col-md-6 col-sm-12 col-xl-4 article mb-3">
                 <a href="view_post.php?post_id=<?php echo $article['id']; ?>">
                     <div class="card h-100 mb-3">
-                    <div class="card-header d-flex justify-content-between">
-                <?php
-            // Retrieve the publisher's information
-            $publisherId = $article['user_id'];
-            $stmt = $conn->prepare("SELECT name, username, avatar, verified FROM users WHERE user_id = ?");
-            $stmt->bind_param("i", $publisherId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $publisher = $result->fetch_assoc();
-            $stmt->close();
-            ?>
-            <div class="d-flex align-items-center">
-            <div class="publisher-photo me-2">
-            <img src="../img/avatars/<?php echo $publisher['avatar']; ?>" class="h-100 rounded-circle" alt="<?php echo $publisher['name']; ?>'s profile photo">
-            </div>
-            <div class="publisher">
-            <p class="mb-0">
-                                    <?php echo $publisher['name']; ?>
-                                    <?php if($publisher['verified']): ?>
-                                        <i class="fa-solid fa-badge-check text-primary"></i>
-                                    <?php endif; ?>
-                                    <br>
-                                    <span>@<?php echo $publisher['username']; ?></span>
-                                </p>
-            </div>
-            </div> 
-            <span class="justify-content-end publish-date text-muted">
-                <?php
-                    
-                    echo date("F j", strtotime($article["created_at"])); 
-                ?>
-            </span>  
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title"><?php echo $article['title']; ?></h5>
-                    <p class="card-text"><?php echo substr($article['content'], 0, 200); ?>...</p>
-                </div>
-                <div class="card-footer d-flex align--items-center justify-content-center text-center">
-                <p class="card-text d-inline mb-0 text-muted me-3"><i class="far fa-eye me-1"></i> <?php echo $article['views']; ?></p>
-                <p class="card-text d-inline mb-0 text-muted"><i class="far fa-comments me-1"></i> <?php echo $article['comments']; ?></p>
-                </div>
+                        <div class="card-header d-flex justify-content-between">
+                            <?php
+                            // Retrieve the publisher's information
+                            $publisherId = $article['user_id'];
+                            $stmt = $conn->prepare("SELECT name, username, avatar, verified FROM users WHERE user_id = ?");
+                            $stmt->bind_param("i", $publisherId);
+                            $stmt->execute();
+                            $result = $stmt->get_result();
+                            $publisher = $result->fetch_assoc();
+                            $stmt->close();
+                            ?>
+                            <div class="d-flex align-items-center">
+                                <div class="publisher-photo me-2">
+                                    <img src="../img/avatars/<?php echo $publisher['avatar']; ?>" class="h-100 rounded-circle" alt="<?php echo $publisher['name']; ?>'s profile photo">
+                                </div>
+                                <div class="publisher">
+                                    <p class="mb-0">
+                                        <?php echo $publisher['name']; ?>
+                                        <?php if ($publisher['verified']): ?>
+                                            <i class="fa-solid fa-badge-check text-primary"></i>
+                                        <?php endif; ?>
+                                        <br>
+                                        <span>@<?php echo $publisher['username']; ?></span>
+                                    </p>
+                                </div>
+                            </div>
+                            <span class="justify-content-end publish-date text-muted">
+                                <?php
+                                echo date("F j", strtotime($article["created_at"]));
+                                ?>
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo $article['title']; ?></h5>
+                            <p class="card-text"><?php echo substr($article['content'], 0, 200); ?>...</p>
+                        </div>
+                        <div class="card-footer d-flex align--items-center justify-content-center text-center">
+                            <p class="card-text d-inline mb-0 text-muted me-3"><i class="far fa-eye me-1"></i><?php echo $article['views']; ?></p>
+                            <p class="card-text d-inline mb-0 text-muted"><i class="far fa-comment me-1"></i><?php echo $article['comments']; ?></p>
+                        </div>
                     </div>
                 </a>
             </div>
-        <?php endif; ?>
-    <?php endforeach; ?>
+            <?php
+            // Increment the counter
+            $counter++;
+
+        endforeach;
+
+        // Display the popular articles if the random position is the last position
+        if ($counter == $randomPosition):
+            if (isset($popularArticles)):
+                ?>
+                <div class="popular-articles col-lg-4 col-md-6 col-sm-12 col-xl-4 mb-3">
+                    <ul class="list-group h-100">
+                        <li class="list-group-item text-center text-secondary">Popular articles</li>
+                        <?php foreach ($popularArticles as $popularArticle): ?>
+                            <li class="list-group-item">
+                                <a href="view_post.php?post_id=<?php echo $popularArticle['id']; ?>" class="list-group-link d-flex justify-content-between align-items-center">
+                                    <?php echo $popularArticle["title"]; ?>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php
+            endif;
+        endif;
+        ?>
     </div>
 <?php else: ?>
     <div class="popular-profiles">
@@ -252,7 +316,6 @@ $message = (empty($articles)) ? "There either have been no new articles, or you 
     </div>
 </div>
     </div>
-</div>
 
 <script src="../js/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

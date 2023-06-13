@@ -102,6 +102,25 @@ if (isset($_GET["searchQuery"])) {
     echo json_encode($searchResults);
     exit();
 }
+
+// Calculate the time since the user joined
+$joinedDateTime = new DateTime($member["created_at"]);
+$currentDateTime = new DateTime();
+$timeSinceJoined = $joinedDateTime->diff($currentDateTime);
+
+// Format the time since joined
+if ($timeSinceJoined->y > 0) {
+    $joinedText = "Joined " . $timeSinceJoined->y . " year" . ($timeSinceJoined->y > 1 ? "s" : "") . " ago";
+} elseif ($timeSinceJoined->m > 0) {
+    $joinedText = "Joined " . $timeSinceJoined->m . " month" . ($timeSinceJoined->m > 1 ? "s" : "") . " ago";
+} elseif ($timeSinceJoined->d > 0) {
+    $joinedText = "Joined " . $timeSinceJoined->d . " day" . ($timeSinceJoined->d > 1 ? "s" : "") . " ago";
+} else if ($timeSinceJoined->days > 7) {
+    $weeks = floor($timeSinceJoined->days / 7);
+    $joinedText = "Joined " . $weeks . " week" . ($weeks > 1 ? "s" : "") . " ago";
+} else {
+    $joinedText = "Joined recently";
+}
 ?>
 
 <!DOCTYPE html>
@@ -156,7 +175,8 @@ if (isset($_GET["searchQuery"])) {
                 <?php endif; ?>
             </h5>
             <h6 class="mb-3" style="color: #949494">@<?php echo $member['username']; ?></h6>
-            <p>Email: <?php echo $member['email']; ?></p>
+            <p class="d-flex align-items-center"><i class="fa-regular fa-envelope me-1"></i><?php echo $member['email']; ?></p>
+            <p class="d-flex align-items-center"><i class="far fa-rocket-launch me-1"></i><?php echo $joinedText; ?></p>
             <div class="userInfo-buttons mb-3">
             <button class="btn me-3" data-bs-toggle="modal" data-bs-target="#followersModal" data-userid="<?php echo $member['user_id']; ?>"><b><?php echo $followerCount; ?></b> Followers</button>
 
@@ -258,7 +278,7 @@ if (isset($_GET["searchQuery"])) {
                             </div>
                         <?php endif; ?>
                         <div class="stats d-flex align-items-center">
-                        <p class="card-text d-inline mb-0 me-3"><?php echo date("F j, Y, H:i", strtotime($article["created_at"])); ?></p>
+                        <p class="card-text d-inline mb-0 me-3"><?php echo date("F j Y, H:i", strtotime($article["created_at"])); ?></p>
                             <p class="card-text d-inline mb-0 text-muted me-3"><i class="far fa-eye me-1"></i> <?php echo $article['views']; ?></p>
                 <p class="card-text d-inline mb-0 text-muted"><i class="far fa-comments me-1"></i> <?php echo $article['comments']; ?></p>
                             </div>
@@ -274,7 +294,7 @@ if (isset($_GET["searchQuery"])) {
 </div>
 
 <div class="modal fade" id="followersModal" tabindex="-1" aria-labelledby="followersModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="followersModalLabel">Followers</h5>
