@@ -15,25 +15,19 @@ $userId = $_SESSION["user_id"];
 $stmt = $conn->prepare("SELECT COUNT(*) FROM user_followers WHERE follower_id = ?");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
-$result = $stmt->get_result();
-$count = $result->fetch_row()[0];
+$count = $stmt->get_result()->fetch_row()[0];
 $stmt->close();
 
-$articles = [];
 if ($count > 0) {
     // Retrieve the list of followed user IDs
     $stmt = $conn->prepare("SELECT followed_id FROM user_followers WHERE follower_id = ? ");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $followedUsers = $result->fetch_all(MYSQLI_ASSOC);
+    $followedUsers = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 
     // Create an array to store the followed user IDs
-    $followedUserIds = [];
-    foreach ($followedUsers as $followedUser) {
-        $followedUserIds[] = $followedUser['followed_id'];
-    }
+    $followedUserIds = array_column($followedUsers, 'followed_id');
 
     // Add the signed user's ID to the list of followed user IDs
     $followedUserIds[] = $userId;
@@ -45,20 +39,24 @@ if ($count > 0) {
     $stmt = $conn->prepare("SELECT * FROM articles WHERE user_id IN ($placeholders) ORDER BY `articles`.`created_at` DESC");
     $stmt->bind_param(str_repeat('i', count($followedUserIds)), ...$followedUserIds);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $articles = $result->fetch_all(MYSQLI_ASSOC);
+    $articles = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
+
+    // Remove signed user's articles from the array
+    $articles = array_filter($articles, function($article) use ($userId) {
+        return $article['user_id'] != $userId;
+    });
 }
-    $stmt = $conn->prepare("SELECT users.*, COUNT(user_followers.follower_id) AS follower_count 
-                            FROM users 
-                            LEFT JOIN user_followers ON users.user_id = user_followers.followed_id
-                            GROUP BY users.user_id
-                            ORDER BY follower_count DESC
-                            LIMIT 10");
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $topUsers = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
+
+$stmt = $conn->prepare("SELECT users.*, COUNT(user_followers.follower_id) AS follower_count 
+                        FROM users 
+                        LEFT JOIN user_followers ON users.user_id = user_followers.followed_id
+                        GROUP BY users.user_id
+                        ORDER BY follower_count DESC
+                        LIMIT 10");
+$stmt->execute();
+$topUsers = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 
 // Check if the search query is provided in the GET request
 if (isset($_GET["searchQuery"])) {
@@ -69,22 +67,18 @@ if (isset($_GET["searchQuery"])) {
     $searchTerm = "%$searchQuery%";
     $stmt->bind_param("s", $searchTerm);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $users = $result->fetch_all(MYSQLI_ASSOC);
+    $users = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 
     // Prepare the search results as JSON
-    $searchResults = [];
-    if (count($users) > 0) {
-        foreach ($users as $user) {
-            $searchResults[] = [
-                'user_id' => $user['user_id'],
-                'username' => $user['username'],
-                'name' => $user['name'],
-                'avatar' => $user['avatar']
-            ];
-        }
-    }
+    $searchResults = array_map(function ($user) {
+        return [
+            'user_id' => $user['user_id'],
+            'username' => $user['username'],
+            'name' => $user['name'],
+            'avatar' => $user['avatar']
+        ];
+    }, $users);
 
     // Send the search results as JSON response
     header('Content-Type: application/json');
@@ -92,10 +86,10 @@ if (isset($_GET["searchQuery"])) {
     exit();
 }
 
-if (empty($articles)){
-    $message = "There either has been no new articles, or you don't follow anyone.";
-}
+$message = (empty($articles)) ? "There either have been no new articles, or you don't follow anyone." : "Here are the latest articles from the people you follow.";
 ?>
+
+
 
 <!DOCTYPE html>
 <html>

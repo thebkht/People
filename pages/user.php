@@ -115,7 +115,7 @@ if (isset($_GET["searchQuery"])) {
             } else{
                 echo $member["username"];
             }
-        ?> - Readit
+        ?> - people
     </title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/style.css">
@@ -194,7 +194,7 @@ if (isset($_GET["searchQuery"])) {
                 <img src="../img/avatars/<?php echo $member['avatar']; ?>" class="h-100 rounded-circle" alt="<?php echo $member['name']; ?>'s profile photo">
             </div>
             <div class="user-scroll_user">
-            <span class="user-scroll_name">
+            <span class="user-scroll_name d-block">
                 <?php echo $member['name']; ?>
                 <?php if ($member['verified']): ?>
                     <i class="fa-solid fa-badge-check text-primary ms-1"></i>

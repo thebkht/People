@@ -346,21 +346,21 @@ if (isset($_GET["post_id"])) {
         <section>
         <?php
             
-            if (isset($moreArticles)) {
-                $displayed_articles = [];
-                echo "<h3>More from " . $user['name'] . "</h3>";
-                echo "<ul class='list-group related-articles mb-4'>";
-                
-                foreach ($moreArticles as $moreArticle) {
-                    if (!empty($moreArticle['id']) && !in_array($moreArticle['id'], $displayed_articles)){
-                        echo "<li class='list-group-item'>";
-                        echo "<a href='view_post.php?post_id=". $moreArticle['id'] . "'>" . $moreArticle['title'] . "</a>";
-                        echo "</li>";
-                        $displayed_articles[] = $moreArticle['id'];
-                    }    
-                }
-                
-                echo "</ul>";
+            if (!empty($moreArticles)) {
+                    $displayed_articles = [];
+                    echo "<h3>More from " . $publisher['name'] . "</h3>";
+                    echo "<ul class='list-group related-articles mb-4'>";
+                    
+                    foreach ($moreArticles as $moreArticle) {
+                        if (!empty($moreArticle['id'])){
+                            echo "<li class='list-group-item'>";
+                            echo "<a href='view_post.php?post_id=". $moreArticle['id'] . "'>" . $moreArticle['title'] . "</a>";
+                            echo "</li>";
+                            $displayed_articles[] = $moreArticle['id'];
+                        }    
+                    }
+                    
+                    echo "</ul>";
             }
             
         ?>

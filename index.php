@@ -6,7 +6,7 @@
     session_start();
     if (isset($_SESSION["user_id"])) {
         // Redirect the user to the login page or display an error message
-        header("Location: app.php");
+        header("Location: pages/index.php");
         exit();
     }
 ?>
