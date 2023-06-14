@@ -57,7 +57,7 @@
             <div class="row justify-content-center">
               <div class="col-10 text-center">
                 <div class="text text-white">
-                  <h2 class="text-center">Discover and Connect with Like-minded People</h2>
+                  <h2 class="text-center">Discover and Connect with<br>Like-minded People</h2>
                   <p class="text-center">Expand Your Network and Unleash New Possibilities</p>
               </div>
               <img src="img/header-img.png" class="w-100" alt="">
