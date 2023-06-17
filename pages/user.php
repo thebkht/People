@@ -113,11 +113,11 @@ if ($timeSinceJoined->y > 0) {
     $joinedText = "Joined " . $timeSinceJoined->y . " year" . ($timeSinceJoined->y > 1 ? "s" : "") . " ago";
 } elseif ($timeSinceJoined->m > 0) {
     $joinedText = "Joined " . $timeSinceJoined->m . " month" . ($timeSinceJoined->m > 1 ? "s" : "") . " ago";
+} elseif ($timeSinceJoined->d > 7) {
+        $weeks = floor($timeSinceJoined->d / 7);
+        $joinedText = "Joined " . $weeks . " week" . ($weeks > 1 ? "s" : "") . " ago";
 } elseif ($timeSinceJoined->d > 0) {
     $joinedText = "Joined " . $timeSinceJoined->d . " day" . ($timeSinceJoined->d > 1 ? "s" : "") . " ago";
-} else if ($timeSinceJoined->days > 7) {
-    $weeks = floor($timeSinceJoined->days / 7);
-    $joinedText = "Joined " . $weeks . " week" . ($weeks > 1 ? "s" : "") . " ago";
 } else {
     $joinedText = "Joined recently";
 }
